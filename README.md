@@ -1,9 +1,9 @@
 SparkFun Alphanumeric Display Library
 ========================================
 
-[![SparkX High Precision Temperature Sensor - TMP117]()]()
+![SparkX High Precision Temperature Sensor - TMP117](https://cdn.sparkfun.com/assets/parts/1/3/9/6/5/15413-High_Precision_Temperature_Sensor_-_TMP117__Qwiic_-01e.jpg)
 
-[*High Precision Temperature Sensor - TMP117 (Qwiic) (SPX-)*]()
+[*High Precision Temperature Sensor - TMP117 (Qwiic) (SPX-15413)*](https://www.sparkfun.com/products/15413)
 
 The SparkFun Qwiic Alphanumeric Display is a 14-segment, 4 digit alphanumeric display with the Hotlek HT16K33 LED Driver that allows you to control every segment individually through an I2C bus. 
 
