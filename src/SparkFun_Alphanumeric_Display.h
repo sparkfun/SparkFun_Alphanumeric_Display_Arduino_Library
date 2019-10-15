@@ -24,6 +24,8 @@ Distributed as-is; no warranty is given.
 #ifndef __SparkFun_Alphanumeric_Display_H__
 #define __SparkFun_Alphanumeric_Display_H__
 
+#define HT16K33_I2C_ADDRESS 
+
 class HT16K33
 {
 public:
@@ -33,6 +35,12 @@ public:
     void setBrightness(uint8_t brightLevel);              // Sets the brightness of the LED Display, can take a number 1-16
     uint8_t getBrightness();                              // Returns the level of brightness, 1-16
     void startOscillation();                              // Starts the oscillation of the device
+    void setBlinkRate(uint8_t rate);
+    uint8_t getBlinkRate();
+    void clearDisplay();
+    void clearSegment();
+    void setSegment(uint8_t segment, uint8_t digit);
+    void displayNumer();
 
 private:
     TwoWire *_i2cPort = NULL; //The generic connection to user's chosen I2C hardware
