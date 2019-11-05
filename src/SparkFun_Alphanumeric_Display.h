@@ -32,10 +32,11 @@ public:
     HT16K33(); // Constructor
 
     bool begin(uint8_t driverAddress, TwoWire &wirePort); // Sets the address of the device and opens the Wire port for communication
-    void setBrightness(uint8_t brightLevel);              // Sets the brightness of the LED Display, can take a number 1-16
-    uint8_t getBrightness();                              // Returns the level of brightness, 1-16
-    void setBlinkRate(uint8_t rate);                      // Sets the blinking rate of the LED Display, can take a number 0-3
-    uint8_t getBlinkRate();
+    bool setBrightness(uint8_t brightLevel);              // Sets the brightness of the LED Display, can take a number 0-15
+    // uint8_t getBrightness();                              // Returns the level of brightness, 1-16
+    void startOscillation();                              // Starts the oscillation of the device
+    void setBlinkRate(uint8_t rate);
+    // uint8_t getBlinkRate();
     void clearDisplay();
     void clearSegment();
     void setSegment(uint8_t segment, uint8_t digit);

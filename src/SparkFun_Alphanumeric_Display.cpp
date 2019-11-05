@@ -157,3 +157,20 @@ uint8_t HT16K33::setBlinkRate(uint8_t rate)
 	// 	  return 0;
 }
 
+/* CLEAR DISPLAY
+	This function will clear the entire display. This writes to the display setup register.
+	The command summary that describes this can be found on page 24 and 9 of the HT16K33
+	datasheet. 
+*/
+void HT16K33::clearDisplay()
+{
+	// Write code here
+}
+
+/* CLEAR SEGMENT
+	This function will clear the segment that is given
+*/
+void HT16K33::clearSegment(uint8_t segment, uint8_t digit)
+{
+
+}
