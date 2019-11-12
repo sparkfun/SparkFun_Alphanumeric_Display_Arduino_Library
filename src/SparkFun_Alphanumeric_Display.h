@@ -37,9 +37,9 @@ public:
     void startOscillation();                              // Starts the oscillation of the device
     void setBlinkRate(uint8_t rate);
     // uint8_t getBlinkRate();
-    void clearDisplay();
-    void clearSegment();
-    void setSegment(uint8_t segment, uint8_t digit);
+    void clearDisplay();                                  // Clears the entire display
+    void clearSegment(uint8_t segment, uint8_t digit);    // Clears any desired segment input
+    void setSegment(uint8_t segment, uint8_t digit);      // Sets any desired segment with an input of the segment and the digit
     void displayNumer();
 
 private:
