@@ -19,22 +19,7 @@ local, and you've found our code helpful, please buy us a round!
 
 Distributed as-is; no warranty is given.
 ******************************************************************************/
-
-#include <Arduino.h>
-#include <Wire.h>
 #include "SparkFun_Alphanmeric_Display.h"
-
-
-/* CONSTRUCTOR
-    This function will use the main I2C port on the Arduino 
-	by default.
-	This needs to be called when running the example sketches to
-	initialize the sensor and be able to call to the library. 
-*/
-HT16K33::HT16K33()
-{
-}
-
 
 /* BEGIN
     This function checks if the TMP will ACK over I2C, and
@@ -43,32 +28,37 @@ HT16K33::HT16K33()
 	with setting the wire for the I2C Communication. 
 	This will return true if both checks pass.
 */
-bool HT16K33::begin(uint8_t sensorAddress, TwoWire &wirePort)
+bool HT16K33::begin(uint8_t address, TwoWire &wirePort)
 {
-	_i2cPort = &wirePort;			// Chooses the wire port of the device
-	_deviceAddress = sensorAddress; // Sets the address of the device
+	_deviceAddress = address; //grab the address of the alphanumeric
+	_i2cPort = &wirePort;	 //assign the port
 
-	//make sure the TMP will acknowledge over I2C
-	_i2cPort->beginTransmission(sensorAddress);
-	if (_i2cPort->endTransmission() != 0)
+	//return true if the device is connected
+	return (isConnected());
+}
+
+bool HT16K33::isConnected()
+{
+	_i2cPort->beginTransmission(_deviceAddress);
+	if (_i2cPort->endTransmission() == 0)
 	{
-		return false;
+		//Check that we are talking to the right thing. Is the device ID what we expect?
+		if (checkDeviceID() == true)
+			return true;
 	}
+	return false;
+}
 
-	uint16_t deviceID = readRegister(HT16K33_I2C_ADDRESS); // reads registers into rawData
+uint8_t HT16K33::deviceID()
+{
+	uint8_t id;
+	read(/*something*/, (uint8_t *)&id, (uint8_t)sizeof(id)); //read and return the ID register
+	return id;
+}
 
-	//make sure the device ID reported by the HT16K33 is correct
-	//should always be 0x____
-	if (deviceID != DEVICE_ID_VALUE)
-	{
-		return false;
-	}
-
-	/* Start the Oscillation of the device */
-	Wire.beginTrasnmission(sensorAddress);
-	Wire.Write(0x2120); // 0x2120 = The oscillation of system setup and the definition
-
-	return true; //returns true if all the checks pass
+bool HT16K33::checkDeviceID()
+{
+	return (deviceID() == DEV_ID); //Return true if the device ID matches what we expect
 }
 
 /* SET BRIGHTNESS
@@ -79,7 +69,8 @@ bool setBrightness(uint8_t brightLevel)
 {
 	uint16_t fullLevel = 0b1110000011101111
 
-	brightLevel << 8;
+						 brightLevel
+						 << 8;
 	fullLevel += brightLevel;
 	Wire.beginTransmission(HT16K33_I2C_ADDRESS);
 	Wire.write(fullLevel); // Send the full level with the correct level shifted in
@@ -134,11 +125,12 @@ bool setBrightness(uint8_t brightLevel)
 */
 uint8_t HT16K33::setBlinkRate(uint8_t rate)
 {
-	if((rate > 3) || (rate < 0)) // 
+	if ((rate > 3) || (rate < 0)) //
 
-	uint16_t fullBlinkRate = 0b1000000110000000 // The address starts with blinking rate off
+		uint16_t fullBlinkRate = 0b1000000110000000 // The address starts with blinking rate off
 
-	fullBlinkRate << 8;
+								 fullBlinkRate
+								 << 8;
 	fullBlinkRate += rate;
 	Wire.beginTransmission(HT16K33_I2C_ADDRESS);
 	Wire.write(fullBlinkRate); // Send the full level with the correct level shifted in
@@ -172,5 +164,56 @@ void HT16K33::clearDisplay()
 */
 void HT16K33::clearSegment(uint8_t segment, uint8_t digit)
 {
+}
 
+/*----------------------- Internal I2C Abstraction -----------------------------*/
+
+bool HT16K33::read(/*something*/ reg, uint8_t *buff, uint8_t buffSize)
+{
+	_i2cPort->beginTransmission(_deviceAddress);
+	_i2cPort->write(reg);
+	_i2cPort->endTransmission();
+
+	if (_i2cPort->requestFrom(_deviceAddress, buffSize) > 0)
+	{
+		for (uin8_t i = 0; i < buffSize; i++)
+		{
+			buff[i] = _i2cPort->read();
+		}
+		return true;
+	}
+
+	return false;
+}
+
+//Overloaded function declaration
+//Use when reading just one byte of data
+bool HT16K33::read(/*something*/ reg, uint8_t *buff, uint8_t buffSize)
+{
+	return (read(ref, (uint8_t *)&data, (uint8_t)sizeof(data)));
+}
+
+bool HT16K33::write(/*something*/ reg, uint8_t *buff, uint8_t buffSize)
+{
+	_i2cPort->beginTransmission(_deviceAddress);
+	_i2cPort->write(reg);
+
+	for (uint8_t i = 0; i < buffSzie; i++)
+	{
+		_i2cPort->write(buff[i]);
+	}
+
+	if (_i2cPort->endTransmission() == 0)
+	{
+		return true;
+	}
+
+	return false;
+}
+
+//Overloaded function declaration
+//Use when writing just one byte of data
+bool HT16K33::write(/*something*/ reg, uint8_t data)
+{
+	return (write(reg, (uint8_t *)&data, (uint8_t)sizeof(data)));
 }

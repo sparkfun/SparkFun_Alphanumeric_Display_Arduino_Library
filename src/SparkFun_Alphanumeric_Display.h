@@ -17,37 +17,45 @@ local, and you've found our code helpful, please buy us a round!
 
 Distributed as-is; no warranty is given.
 ******************************************************************************/
+#ifndef __SparkFun_Alphanumeric_Display_H__
+#define __SparkFun_Alphanumeric_Display_H__
 
 #include <Wire.h>
 #include <Arduino.h>
 
-#ifndef __SparkFun_Alphanumeric_Display_H__
-#define __SparkFun_Alphanumeric_Display_H__
-
-#define HT16K33_I2C_ADDRESS 
+#define DEFAULT_ADDRESS /*something*/
+#define DEV_ID          /*something*/
 
 class HT16K33
 {
-public:
-    HT16K33(); // Constructor
+private:
+    TwoWire *_i2cPort;      //The generic connection to user's chosen I2C hardware
+    uint8_t _deviceAddress; // Address of alphanumeric display
 
-    bool begin(uint8_t driverAddress, TwoWire &wirePort); // Sets the address of the device and opens the Wire port for communication
-    bool setBrightness(uint8_t brightLevel);              // Sets the brightness of the LED Display, can take a number 0-15
+public:
+    //Device status
+    bool begin(uint8_t address = DEFAULT_ADDRESS, TwoWire &wirePort); // Sets the address of the device and opens the Wire port for communication
+    bool isConnected();
+    uint8_t deviceID();
+    bool checkDeviceID();
+    bool setI2Caddress(uint8_t address);
+    uint8_t getI2Caddress();
+
+    bool setBrightness(uint8_t brightLevel); // Sets the brightness of the LED Display, can take a number 0-15
     // uint8_t getBrightness();                              // Returns the level of brightness, 1-16
-    void startOscillation();                              // Starts the oscillation of the device
+    void startOscillation(); // Starts the oscillation of the device
     void setBlinkRate(uint8_t rate);
     // uint8_t getBlinkRate();
-    void clearDisplay();                                  // Clears the entire display
-    void clearSegment(uint8_t segment, uint8_t digit);    // Clears any desired segment input
-    void setSegment(uint8_t segment, uint8_t digit);      // Sets any desired segment with an input of the segment and the digit
+    void clearDisplay();                               // Clears the entire display
+    void clearSegment(uint8_t segment, uint8_t digit); // Clears any desired segment input
+    void setSegment(uint8_t segment, uint8_t digit);   // Sets any desired segment with an input of the segment and the digit
     void displayNumer();
 
-private:
-    TwoWire *_i2cPort = NULL; //The generic connection to user's chosen I2C hardware
-    uint8_t _deviceAddress;   // Address of
-
-    uint16_t readRegister(uint8_t reg);             // Reads 2 register bytes from sensor
-    void writeRegister(uint8_t reg, uint16_t data); // Wires single byte of data to the sensor
+    //I2C abstraction
+    bool read(/*something*/ reg, uint8_t *buff, uint8_t buffSize);
+    bool read(/*something*/ reg, uint8_t data);
+    bool write(/*something*/ reg, uint8_t *buff, uint8_t buffSize);
+    bool write(/*something*/ reg, uint8_t data);
 };
 
 #endif
