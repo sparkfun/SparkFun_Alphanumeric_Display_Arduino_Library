@@ -22,9 +22,10 @@ Distributed as-is; no warranty is given.
 
 #include <Wire.h>
 #include <Arduino.h>
+#include "characters.h"
 
-#define DEFAULT_ADDRESS /*something*/
-#define DEV_ID          /*something*/
+#define DEFAULT_ADDRESS 0x70 //Default I2C address when A0, A1 are floating
+#define DEV_ID 0x12          //Device ID that I just made up
 
 class HT16K33
 {
@@ -34,28 +35,35 @@ private:
 
 public:
     //Device status
-    bool begin(uint8_t address = DEFAULT_ADDRESS, TwoWire &wirePort); // Sets the address of the device and opens the Wire port for communication
+    bool begin(uint8_t address = DEFAULT_ADDRESS, TwoWire &wirePort = Wire); // Sets the address of the device and opens the Wire port for communication
     bool isConnected();
     uint8_t deviceID();
     bool checkDeviceID();
     bool setI2Caddress(uint8_t address);
     uint8_t getI2Caddress();
 
-    bool setBrightness(uint8_t brightLevel); // Sets the brightness of the LED Display, can take a number 0-15
-    // uint8_t getBrightness();                              // Returns the level of brightness, 1-16
-    void startOscillation(); // Starts the oscillation of the device
-    void setBlinkRate(uint8_t rate);
-    // uint8_t getBlinkRate();
-    void clearDisplay();                               // Clears the entire display
-    void clearSegment(uint8_t segment, uint8_t digit); // Clears any desired segment input
-    void setSegment(uint8_t segment, uint8_t digit);   // Sets any desired segment with an input of the segment and the digit
-    void displayNumer();
+    //Light up functions
+    bool initialize();
+    bool clearDisplay();
+    void illuminateSegment(uint8_t segment, uint8_t digit);
+    void illuminateChar(uint16_t disp, uint8_t digit);
+    void printChar(uint8_t dispChar, uint8_t digit);
+    void printString(char *s, uint8_t n);
+    bool updateDisplay();
+
+    // bool setBrightness(uint8_t brightLevel); // Sets the brightness of the LED Display, can take a number 0-15
+    // // uint8_t getBrightness();                              // Returns the level of brightness, 1-16
+    // void startOscillation(); // Starts the oscillation of the device
+    // void setBlinkRate(uint8_t rate);
+    // // uint8_t getBlinkRate();
+    // void setSegment(uint8_t segment, uint8_t digit);   // Sets any desired segment with an input of the segment and the digit
+    // void displayNumer();
 
     //I2C abstraction
-    bool read(/*something*/ reg, uint8_t *buff, uint8_t buffSize);
-    bool read(/*something*/ reg, uint8_t data);
-    bool write(/*something*/ reg, uint8_t *buff, uint8_t buffSize);
-    bool write(/*something*/ reg, uint8_t data);
+    bool read(uint8_t reg, uint8_t *buff, uint8_t buffSize);
+    bool read(uint8_t reg, uint8_t data);
+    bool write(uint8_t reg, uint8_t *buff, uint8_t buffSize);
+    bool write(uint8_t reg, uint8_t data);
 };
 
 #endif
