@@ -40,8 +40,6 @@ void setup()
   display.printChar('H', 2);
   display.printChar('A', 3);
   display.printChar('T', 4);
-
-  display.updateDisplay();
 }
 
 void loop(){

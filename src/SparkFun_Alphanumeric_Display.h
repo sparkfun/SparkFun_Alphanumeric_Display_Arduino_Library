@@ -22,7 +22,6 @@ Distributed as-is; no warranty is given.
 
 #include <Wire.h>
 #include <Arduino.h>
-#include "characters.h"
 
 #define DEFAULT_ADDRESS 0x70 //Default I2C address when A0, A1 are floating
 #define DEV_ID 0x12          //Device ID that I just made up
@@ -47,7 +46,7 @@ public:
     bool clearDisplay();
     void illuminateSegment(uint8_t segment, uint8_t digit);
     void illuminateChar(uint16_t disp, uint8_t digit);
-    void printChar(uint8_t dispChar, uint8_t digit);
+    void printChar(uint8_t displayChar, uint8_t digit);
     void printString(char *s, uint8_t n);
     bool updateDisplay();
 

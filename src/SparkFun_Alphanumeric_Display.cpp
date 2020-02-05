@@ -182,6 +182,7 @@ void HT16K33::illuminateSegment(uint8_t segment, uint8_t digit)
 
 	//Update displayRAM array
 	displayRAM[adr] = displayRAM[adr] ^ dat;
+	updateDisplay();
 }
 
 void HT16K33::illuminateChar(uint16_t disp, uint8_t digit)
@@ -195,202 +196,103 @@ void HT16K33::illuminateChar(uint16_t disp, uint8_t digit)
 	}
 }
 
-void HT16K33::printChar(uint8_t dispChar, uint8_t digit)
+#define SFE_ALPHANUM_UNKNOWN_CHAR 75
+
+void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 {
-	uint16_t temp;
-	switch (dispChar)
+	static uint16_t alphanumeric_segs[62]{
+		0b111111,		  //'0'
+		0b10000000110,	//'1'
+		0b101011011,	  //'2'
+		0b101001111,	  //'3'
+		0b101100110,	  //'4'
+		0b101101101,	  //'5'
+		0b101111101,	  //'6'
+		0b1010000000001,  //'7'
+		0b101111111,	  //'8'
+		0b101100111,	  //'9'
+		0b101110111,	  //'A'
+		0b1001100001111,  //'B'
+		0b111001,		  //'C'
+		0b1001000001111,  //'D'
+		0b101111001,	  //'E'
+		0b101110001,	  //'F'
+		0b100111101,	  //'G'
+		0b101110110,	  //'H'
+		0b1001000001001,  //'I'
+		0b11110,		  //'J'
+		0b110001110000,   //'K'
+		0b111000,		  //'L'
+		0b10010110110,	//'M'
+		0b100010110110,   //'N'
+		0b111111,		  //'O'
+		0b101110011,	  //'P'
+		0b100000111111,   //'Q'
+		0b100101110011,   //'R'
+		0b110001101,	  //'S'
+		0b1001000000001,  //'T'
+		0b111110,		  //'U'
+		0b10010000110000, //'V'
+		0b10100000110110, //'W'
+		0b10110010000000, //'X'
+		0b1010010000000,  //'Y'
+		0b10010000001001, //'Z'
+		0b101011111,	  //'a'
+		0b100001111000,   //'b'
+		0b101011000,	  //'c'
+		0b10000100001110, //'d'
+		0b1111001,		  //'e'
+		0b1110001,		  //'f'
+		0b110001111,	  //'g'
+		0b101110100,	  //'h'
+		0b1000000000000,  //'i'
+		0b1110,			  //'j'
+		0b1111000000000,  //'k'
+		0b1001000000000,  //'l'
+		0b1000101010100,  //'m'
+		0b100001010000,   //'n'
+		0b101011100,	  //'o'
+		0b10001110001,	//'p'
+		0b100101100011,   //'q'
+		0b1010000,		  //'r'
+		0b110001101,	  //'s'
+		0b1111000,		  //'t'
+		0b11100,		  //'u'
+		0b10000000010000, //'v'
+		0b10100000010100, //'w'
+		0b10110010000000, //'x'
+		0b1100001110,	 //'y'
+		0b10010000001001, //'z'
+						  // ... 0b111001011, //Astrick / Unknown character
+	};
+
+	uint16_t characterPosition = 0;
+
+	//Digits
+	if (displayChar >= '0' && displayChar <= '9')
 	{
-	case '0':
-		temp = SEG_0;
-		break;
-	case '1':
-		temp = SEG_1;
-		break;
-	case '2':
-		temp = SEG_2;
-		break;
-	case '3':
-		temp = SEG_3;
-		break;
-	case '4':
-		temp = SEG_4;
-		break;
-	case '5':
-		temp = SEG_5;
-		break;
-	case '6':
-		temp = SEG_6;
-		break;
-	case '7':
-		temp = SEG_7;
-		break;
-	case '8':
-		temp = SEG_8;
-		break;
-	case '9':
-		temp = SEG_9;
-		break;
-	case 'A':
-		temp = SEG_A;
-		break;
-	case 'B':
-		temp = SEG_B;
-		break;
-	case 'C':
-		temp = SEG_C;
-		break;
-	case 'D':
-		temp = SEG_D;
-		break;
-	case 'E':
-		temp = SEG_E;
-		break;
-	case 'F':
-		temp = SEG_F;
-		break;
-	case 'G':
-		temp = SEG_G;
-		break;
-	case 'H':
-		temp = SEG_H;
-		break;
-	case 'I':
-		temp = SEG_I;
-		break;
-	case 'J':
-		temp = SEG_J;
-		break;
-	case 'K':
-		temp = SEG_K;
-		break;
-	case 'L':
-		temp = SEG_L;
-		break;
-	case 'M':
-		temp = SEG_M;
-		break;
-	case 'N':
-		temp = SEG_N;
-		break;
-	case 'O':
-		temp = SEG_O;
-		break;
-	case 'P':
-		temp = SEG_P;
-		break;
-	case 'Q':
-		temp = SEG_Q;
-		break;
-	case 'R':
-		temp = SEG_R;
-		break;
-	case 'S':
-		temp = SEG_S;
-		break;
-	case 'T':
-		temp = SEG_T;
-		break;
-	case 'U':
-		temp = SEG_U;
-		break;
-	case 'V':
-		temp = SEG_V;
-		break;
-	case 'W':
-		temp = SEG_W;
-		break;
-	case 'X':
-		temp = SEG_X;
-		break;
-	case 'Y':
-		temp = SEG_Y;
-		break;
-	case 'Z':
-		temp = SEG_Z;
-		break;
-	case 'a':
-		temp = SEG_a;
-		break;
-	case 'b':
-		temp = SEG_b;
-		break;
-	case 'c':
-		temp = SEG_c;
-		break;
-	case 'd':
-		temp = SEG_d;
-		break;
-	case 'e':
-		temp = SEG_e;
-		break;
-	case 'f':
-		temp = SEG_f;
-		break;
-	case 'g':
-		temp = SEG_g;
-		break;
-	case 'h':
-		temp = SEG_h;
-		break;
-	case 'i':
-		temp = SEG_i;
-		break;
-	case 'j':
-		temp = SEG_j;
-		break;
-	case 'k':
-		temp = SEG_k;
-		break;
-	case 'l':
-		temp = SEG_l;
-		break;
-	case 'm':
-		temp = SEG_m;
-		break;
-	case 'n':
-		temp = SEG_n;
-		break;
-	case 'o':
-		temp = SEG_o;
-		break;
-	case 'p':
-		temp = SEG_p;
-		break;
-	case 'q':
-		temp = SEG_q;
-		break;
-	case 'r':
-		temp = SEG_r;
-		break;
-	case 's':
-		temp = SEG_s;
-		break;
-	case 't':
-		temp = SEG_t;
-		break;
-	case 'u':
-		temp = SEG_u;
-		break;
-	case 'v':
-		temp = SEG_v;
-		break;
-	case 'w':
-		temp = SEG_w;
-		break;
-	case 'x':
-		temp = SEG_x;
-		break;
-	case 'y':
-		temp = SEG_y;
-		break;
-	case 'z':
-		temp = SEG_z;
-		break;
-	default:
-		temp = SEG_CLEAR;
+		characterPosition = displayChar - '0';
+	}
+	//Upper case letters
+	else if (displayChar >= 'A' && displayChar <= 'Z')
+	{
+		characterPosition = displayChar - 'A' + 10;
+	}
+	//Lower case letters
+	else if (displayChar >= 'a' && displayChar <= 'z')
+	{
+		characterPosition = displayChar - 'a' + 10 + 26;
+	}
+	else //Symbols
+	{
+		characterPosition = displayChar + (10 + 26 + 26);
 	}
 
-	illuminateChar(temp, digit);
+	//User wants to display unknown character
+	if (characterPosition > sizeof(alphanumeric_segs))
+		characterPosition = SFE_ALPHANUM_UNKNOWN_CHAR;
+
+	illuminateChar(alphanumeric_segs[characterPosition], digit);
 }
 
 void HT16K33::printString(char *s, uint8_t n)

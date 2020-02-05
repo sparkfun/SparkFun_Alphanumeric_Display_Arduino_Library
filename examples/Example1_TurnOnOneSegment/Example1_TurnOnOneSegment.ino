@@ -40,8 +40,6 @@ void setup()
   display.illuminateSegment('L', 3);
   display.illuminateSegment('I', 2);
   display.illuminateSegment('G', 4);
-
-  display.updateDisplay();
 }
 
 void loop()

@@ -35,9 +35,7 @@ void setup() {
   display.initialize();
   display.clearDisplay();
 
-  display.printString("EVEN", 4);
-
-  display.updateDisplay();
+  display.printString("HAHA", 4);
 }
 
 void loop(){  
