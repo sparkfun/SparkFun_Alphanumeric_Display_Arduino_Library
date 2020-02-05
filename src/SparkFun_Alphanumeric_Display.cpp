@@ -90,6 +90,20 @@ bool HT16K33::clearDisplay()
 	}
 }
 
+bool HT16K33::setBrightness(uint8_t duty)
+{
+	int temp = 0;
+	duty = duty + 223;
+	write(duty, (uint8_t *)&temp, 0);
+}
+
+//DEBUGGING: is this possible?
+uint8_t HT16K33::getBrightness()
+{
+	uint8_t duty;
+	read()
+}
+
 void HT16K33::illuminateSegment(uint8_t segment, uint8_t digit)
 {
 	//DEBUGGING
@@ -135,7 +149,6 @@ void HT16K33::illuminateSegment(uint8_t segment, uint8_t digit)
 	{
 		if (segment >= 'A' && segment <= 'G')
 			row = 8;
-		// else if (segment >= 'H' && segment <= 'N' || segment == 'g')
 		else
 			row = 9;
 	}
@@ -143,7 +156,6 @@ void HT16K33::illuminateSegment(uint8_t segment, uint8_t digit)
 	{
 		if (segment >= 'A' && segment <= 'G')
 			row = 7;
-		// else if (segment >= 'H' && segment <= 'N' || segment == 'g')
 		else
 			row = 10;
 	}
@@ -151,7 +163,6 @@ void HT16K33::illuminateSegment(uint8_t segment, uint8_t digit)
 	{
 		if (segment >= 'A' && segment <= 'G')
 			row = 2;
-		// else if (segment >= 'H' && segment <= 'N' || segment == 'g')
 		else
 			row = 3;
 	}
@@ -159,7 +170,6 @@ void HT16K33::illuminateSegment(uint8_t segment, uint8_t digit)
 	{
 		if (segment >= 'A' && segment <= 'G')
 			row = 0;
-		// else if (segment >= 'H' && segment <= 'N' || segment == 'g')
 		else
 			row = 4;
 	}
@@ -196,11 +206,24 @@ void HT16K33::illuminateChar(uint16_t disp, uint8_t digit)
 	}
 }
 
-#define SFE_ALPHANUM_UNKNOWN_CHAR 75
+#define SFE_ALPHANUM_UNKNOWN_CHAR 87
 
 void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 {
-	static uint16_t alphanumeric_segs[62]{
+	static uint16_t alphanumeric_segs[88]{
+		0b1001101001110,  //'#'
+		0b1001101101101,  //'$'
+		0b10010000100100, //'%'
+		0b110011011001,   //'&'
+		0b1000000000,	 //'''
+		0b111001,		  //'('
+		0b1111,			  //')'
+		0b11111010000000, //'*'
+		0b1001101000000,  //'+'
+		0b10000000000000, //','
+		0b101000000,	  //'-'
+
+		0b10010000000000, //'/'
 		0b111111,		  //'0'
 		0b10000000110,	//'1'
 		0b101011011,	  //'2'
@@ -211,6 +234,12 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 		0b1010000000001,  //'7'
 		0b101111111,	  //'8'
 		0b101100111,	  //'9'
+		0b1001000000000,  //':'
+		0b10001000000000, //';'
+		0b110000000000,   //'<'
+		0b101001000,	  //'='
+		0b10000010000000, //'>'
+
 		0b101110111,	  //'A'
 		0b1001100001111,  //'B'
 		0b111001,		  //'C'
@@ -237,6 +266,12 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 		0b10110010000000, //'X'
 		0b1010010000000,  //'Y'
 		0b10010000001001, //'Z'
+		0b111001,		  //'['
+		0b100010000000,   //'\'
+		0b1111,			  //']'
+
+		0b1000,			  //'_'
+		0b10000000,		  //'`'
 		0b101011111,	  //'a'
 		0b100001111000,   //'b'
 		0b101011000,	  //'c'
@@ -263,31 +298,37 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 		0b10110010000000, //'x'
 		0b1100001110,	 //'y'
 		0b10010000001001, //'z'
-						  // ... 0b111001011, //Astrick / Unknown character
+		0b10000011001001, //'{'
+		0b1001000000000,  //'|'
+		0b110100001001,   //'}'
+
+		0b11111111111111, //Unknown character
 	};
 
 	uint16_t characterPosition = 0;
 
-	//Digits
-	if (displayChar >= '0' && displayChar <= '9')
+	//Symbols
+	if (displayChar >= '#' && displayChar <= '-')
 	{
-		characterPosition = displayChar - '0';
+		characterPosition = displayChar - '#';
 	}
-	//Upper case letters
-	else if (displayChar >= 'A' && displayChar <= 'Z')
+	//Symbols + digits
+	else if (displayChar >= '/' && displayChar <= '>')
 	{
-		characterPosition = displayChar - 'A' + 10;
+		characterPosition = displayChar - '/' + 11;
 	}
-	//Lower case letters
-	else if (displayChar >= 'a' && displayChar <= 'z')
+	//Upper case letters + symbols
+	else if (displayChar >= 'A' && displayChar <= ']')
 	{
-		characterPosition = displayChar - 'a' + 10 + 26;
+		characterPosition = displayChar - 'A' + 11 + 16;
 	}
-	else //Symbols
+	//Symbols + lower case letters
+	else
 	{
-		characterPosition = displayChar + (10 + 26 + 26);
+		characterPosition = displayChar - '_' + 11 + 16 + 29;
 	}
 
+	//DEBUG: this doesn't quite work the way I think it should
 	//User wants to display unknown character
 	if (characterPosition > sizeof(alphanumeric_segs))
 		characterPosition = SFE_ALPHANUM_UNKNOWN_CHAR;
@@ -307,60 +348,6 @@ bool HT16K33::updateDisplay()
 {
 	return (write(0, (uint8_t *)displayRAM, (uint8_t)sizeof(displayRAM)));
 }
-
-// /* SET BRIGHTNESS
-// 	This function will take in a number in the range 0-15 and send it to the
-// 	dimming set on the HT16K33 Command Summary.
-// */
-// bool setBrightness(uint8_t brightLevel)
-// {
-// 	uint16_t fullLevel = 0b1110000011101111
-
-// 						 brightLevel
-// 						 << 8;
-// 	fullLevel += brightLevel;
-// 	Wire.beginTransmission(HT16K33_I2C_ADDRESS);
-// 	Wire.write(fullLevel); // Send the full level with the correct level shifted in
-// 	Wire.endTransmission();
-
-// 	// Implementation in case above doesn't work
-// 	// if(brightLevel == 0)		// 0
-// 	// 	Wire.write(0xE0EF);
-// 	// else if(brightLevel == 1)	// 1
-// 	// 	Wire.write(0xE1EF);
-// 	// else if(brightLevel == 2)	// 2
-// 	// 	Wire.write(0xE2EF);
-// 	// else if(brightLevel == 3)	// 3
-// 	// 	Wire.write(0xE3EF);
-// 	// else if(brightLevel == 4)	// 4
-// 	// 	Wire.write(0xE4EF);
-// 	// else if(brightLevel == 5)	// 5
-// 	// 	Wire.write(0xE5EF);
-// 	// else if(brightLevel == 6)	// 6
-// 	// 	Wire.write(0xE6EF);
-// 	// else if(brightLevel == 7)	// 7
-// 	// 	Wire.write(0xE7EF);
-// 	// else if(brightLevel == 8)	// 8
-// 	// 	Wire.write(0xE8EF);
-// 	// else if(brightLevel == 9)   // 9
-// 	// 	Wire.write(0xE9EF);
-// 	// else if(brightLevel == 10)  // 10
-// 	// 	Wire.write(0xEAEF);
-// 	// else if(brightLevel == 11)  // 11
-// 	// 	Wire.write(0xEBEF);
-// 	// else if(brightLevel == 12)  // 12
-// 	// 	Wire.write(0xECEF);
-// 	// else if(brightLevel == 13)  // 13
-// 	// 	Wire.write(0xEDEF);
-// 	// else if(brightLevel == 14)  // 14
-// 	// 	Wire.write(0xEEEF);
-// 	// else if(brightLevel == 15)  // 15
-// 	// 	Wire.write(0xEFEF);
-// 	// else
-// 	// 	return false;
-
-// 	return true;
-// }
 
 // /* SET BLINK RATE
 // 	This function will take in a number, 0-3, to set the rate of blinking

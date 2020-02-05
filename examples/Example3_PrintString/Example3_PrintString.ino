@@ -34,8 +34,9 @@ void setup() {
 
   display.initialize();
   display.clearDisplay();
-
-  display.printString("HAHA", 4);
+  display.setBrightness(16);
+  
+  display.printString("POOP", 4);
 }
 
 void loop(){  

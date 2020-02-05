@@ -41,22 +41,20 @@ public:
     bool setI2Caddress(uint8_t address);
     uint8_t getI2Caddress();
 
-    //Light up functions
+    //Configuration functions
     bool initialize();
     bool clearDisplay();
+    bool setBrightness(uint8_t duty);
+    // uint8_t getBrightness();
+    // bool setBlinkRate(uint8_t rate);
+    // uint8_t getBlinkRate();
+
+    //Light up functions
     void illuminateSegment(uint8_t segment, uint8_t digit);
     void illuminateChar(uint16_t disp, uint8_t digit);
     void printChar(uint8_t displayChar, uint8_t digit);
     void printString(char *s, uint8_t n);
     bool updateDisplay();
-
-    // bool setBrightness(uint8_t brightLevel); // Sets the brightness of the LED Display, can take a number 0-15
-    // // uint8_t getBrightness();                              // Returns the level of brightness, 1-16
-    // void startOscillation(); // Starts the oscillation of the device
-    // void setBlinkRate(uint8_t rate);
-    // // uint8_t getBlinkRate();
-    // void setSegment(uint8_t segment, uint8_t digit);   // Sets any desired segment with an input of the segment and the digit
-    // void displayNumer();
 
     //I2C abstraction
     bool read(uint8_t reg, uint8_t *buff, uint8_t buffSize);
