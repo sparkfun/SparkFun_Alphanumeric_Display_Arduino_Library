@@ -349,40 +349,6 @@ bool HT16K33::updateDisplay()
 	return (write(0, (uint8_t *)displayRAM, (uint8_t)sizeof(displayRAM)));
 }
 
-// /* SET BLINK RATE
-// 	This function will take in a number, 0-3, to set the rate of blinking
-// 	for the display.
-// 	0 = Off
-// 	1 = 2 Hz
-// 	2 = 1 Hz
-// 	3 = 0.5 Hz
-// */
-// uint8_t HT16K33::setBlinkRate(uint8_t rate)
-// {
-// 	if ((rate > 3) || (rate < 0)) //
-
-// 		uint16_t fullBlinkRate = 0b1000000110000000 // The address starts with blinking rate off
-
-// 								 fullBlinkRate
-// 								 << 8;
-// 	fullBlinkRate += rate;
-// 	Wire.beginTransmission(HT16K33_I2C_ADDRESS);
-// 	Wire.write(fullBlinkRate); // Send the full level with the correct level shifted in
-// 	Wire.endTransmission();
-
-// 	// Implementation in case above doesn't work
-// 	// if(rate == 0)		// 0
-// 	//    Wire.write(0x8280);
-// 	// else if(rate == 1)	// 1
-// 	// 	  Wire.write(0x8380);
-// 	// else if(rate == 2)	// 2
-// 	// 	  Wire.write(0x8480);
-// 	// else if(rate == 3)	// 3
-// 	// 	  Wire.write(0x8580);
-// 	// else
-// 	// 	  return 0;
-// }
-
 /*----------------------- Internal I2C Abstraction -----------------------------*/
 
 bool HT16K33::read(uint8_t reg, uint8_t *buff, uint8_t buffSize)
