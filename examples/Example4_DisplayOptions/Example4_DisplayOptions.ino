@@ -1,8 +1,8 @@
 /*****************************************************************************************
- * This example tests illuminating whole 4 letter strings on the 14-segment display.
+ * This example tests display options (brightness, blinking) on the 14-segment display.
  * 
  * Priyanka Makin @ SparkFun Electronics
- * Original Creation Date: February 3, 2020
+ * Original Creation Date: February 18, 2020
  * 
  * SparkFun labored with love to create this code. Feel like supporting open source hardware?
  * Buy a board from SparkFun! LINK GOES HERE
@@ -15,7 +15,7 @@
  * Attach Qwiic Alphanumeric board to Red Board using Qwiic cable.
  * 
  * Distributed as-is; no warranty is given.
- ****************************************************************************************/
+ *****************************************************************************************/
 #include <SparkFun_Alphanumeric_Display.h>
 HT16K33 display;
 
@@ -30,14 +30,17 @@ void setup() {
     Serial.println("Device did not acknowledge! Freezing.");
     while(1);
   }
-  Serial.println("Display acknnowledged.");
+  Serial.println("Display acknowledged.");
+  
+  //Input to setBrightness is duty cycle over 16
+  display.setBrightness(10);
+  //Blink rate in Hz
+  //Acceptable options are defined by HT16K33 datasheet and are 0.5, 1, or 2 Hz
+  display.setBlinkRate(2);
 
-//  display.print("Hello World!");
-  display.print("Hell");
-//  display.write('l');
-//  display.write('a');
-//  display.write('D');
+  display.print("YIKE");
 }
 
-void loop(){  
+void loop() {
+  
 }

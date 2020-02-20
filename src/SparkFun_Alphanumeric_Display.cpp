@@ -21,8 +21,6 @@ Distributed as-is; no warranty is given.
 ******************************************************************************/
 #include <SparkFun_Alphanumeric_Display.h>
 
-uint8_t displayRAM[16];
-
 /*--------------------------- Device Status----------------------------------*/
 /* BEGIN
     This function checks if the TMP will ACK over I2C, and
@@ -31,19 +29,56 @@ uint8_t displayRAM[16];
 	with setting the wire for the I2C Communication. 
 	This will return true if both checks pass.
 */
-bool HT16K33::begin(uint8_t address, TwoWire &wirePort)
+bool HT16K33::begin(uint8_t addressLeft, uint8_t addressLeftCenter, uint8_t addressRightCenter, uint8_t addressRight, TwoWire &wirePort)
 {
-	_deviceAddress = address; //grab the address of the alphanumeric
-	_i2cPort = &wirePort;	 //assign the port
 
-	//return true if the device is connected
-	return (isConnected());
+	_deviceAddressLeft = addressLeft;				//grab the address of the alphanumeric
+	_deviceAddressLeftCenter = addressLeftCenter;   //grab the address of the alphanumeric
+	_deviceAddressRightCenter = addressRightCenter; //grab the address of the alphanumeric
+	_deviceAddressRight = addressRight;				//grab the address of the alphanumeric
+
+	if (_deviceAddressRight != DEFAULT_NOTHING_ATTACHED)
+	{
+		sizeOfDisplay = 16;
+	}
+	else if (_deviceAddressRightCenter != DEFAULT_NOTHING_ATTACHED)
+	{
+		sizeOfDisplay = 12;
+	}
+	else if (_deviceAddressLeftCenter != DEFAULT_NOTHING_ATTACHED)
+	{
+		sizeOfDisplay = 8;
+	}
+
+	//TODO: try to figure this out
+	//malloc more displayRAM
+
+	_i2cPort = &wirePort; //assign the port
+
+	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
+	{
+		if (isConnected(lookUpDisplayAddress(i)) == false)
+		{
+			return false;
+		}
+		if (initialize(lookUpDisplayAddress(i)) == false)
+		{
+			return false;
+		}
+		if (checkDeviceID(lookUpDisplayAddress(i) == false))
+		{
+			return false;
+		}
+	}
+
+	clearDisplay();
+	return true;
 }
 
 //DEBUG: DO WE HAVE TO DO ANY OF THIS CHECK_ID STUFF??!
-bool HT16K33::isConnected()
+bool HT16K33::isConnected(uint8_t address)
 {
-	_i2cPort->beginTransmission(_deviceAddress);
+	_i2cPort->beginTransmission(address);
 	if (_i2cPort->endTransmission() == 0)
 	{
 		//Check that we are talking to the right thing. Is the device ID what we expect?
@@ -53,56 +88,196 @@ bool HT16K33::isConnected()
 	return false;
 }
 
-uint8_t HT16K33::deviceID()
+bool HT16K33::initialize(uint8_t address)
 {
-	uint8_t id;
-	// read(ID, (uint8_t *)&id, (uint8_t)sizeof(id)); //read and return the ID register
-	return id;
-}
+	//We need this temp zero value when we only write one byte to HT16K33 RAM
+	int temp = 0;
 
-bool HT16K33::checkDeviceID()
-{
-	return (deviceID() == DEV_ID); //Return true if the device ID matches what we expect
-}
-
-/*---------------------------- Light Up Functions ------------------------------*/
-bool HT16K33::initialize()
-{
 	//internal system clock enable
-	int temp = 0;
-	write(0x21, (uint8_t *)&temp, 0);
+	if (writeRAM(address, 0x21, (uint8_t *)&temp, 0) == false)
+		return false;
 	//ROW/INT output pin set, INT pin output level set
-	write(0xA0, (uint8_t *)&temp, 0);
-	//Dimming set
-	write(0xEF, (uint8_t *)&temp, 0);
+	if (writeRAM(address, 0xA0, (uint8_t *)&temp, 0) == false)
+		return false;
+	//Set brightness of display by duty cycle
+	if (setBrightness(16) == false)
+	{
+		return false;
+	}
 	//Blinking set - blinking off, display on
-	write(0x81, (uint8_t *)&temp, 0);
+	if (setBlinkRate(0) == false)
+	{
+		blinkRate = 0b000;
+		onState = 1;
+		return false;
+	}
+	return true;
 }
 
-bool HT16K33::clearDisplay()
+//Verify that all objects on I2C bus are alphanumeric displays
+bool HT16K33::checkDeviceID(uint8_t address)
 {
-	int temp = 0;
-	for (int i = 0; i < 16; i++)
+	uint8_t temp;
+	//Turn off display - DEBUG: should it be ALL or ONE?
+	allDisplaysOff();
+	//Write 0xAA to register 0
+	writeRAM(address, 0, 0xAA, 1);
+	//Read it back, it should be 0xAA
+	readRAM(address, 0, (uint8_t *)&temp, sizeof((uint8_t)temp));
+	if (temp != 0xAA)
+		return false;
+	//Clear the write we just did
+	clearDisplay();
+	//Turn display back on
+	allDisplaysOn();
+	return true;
+}
+
+uint8_t HT16K33::lookUpDisplayAddress(uint8_t displayNumber)
+{
+	switch (displayNumber)
 	{
-		//Clear the displayRAM array
-		displayRAM[i] = 0;
-		write(i, (uint8_t *)&temp, (uint8_t)sizeof(temp));
+	case 0:
+		return _deviceAddressLeft;
+		break;
+	case 1:
+		return _deviceAddressLeftCenter;
+		break;
+	case 2:
+		return _deviceAddressRightCenter;
+		break;
+	case 3:
+		return _deviceAddressRight;
+		break;
 	}
 }
 
-bool HT16K33::setBrightness(uint8_t duty)
+/*-------------------------- Display configuration functions ---------------------------*/
+
+bool HT16K33::clearDisplay()
 {
-	int temp = 0;
-	duty = duty + 223;
-	write(duty, (uint8_t *)&temp, 0);
+	for (uint8_t i = 0; i < 16 * sizeOfDisplay / 4; i++)
+	{
+		//Clear the displayRAM array
+		displayRAM[i] = 0;
+		// write(i, (uint8_t *)&temp, (uint8_t)sizeof(temp));
+	}
+	updateDisplay();
+	digitPosition = 0;
 }
 
-//DEBUGGING: is this possible?
-uint8_t HT16K33::getBrightness()
+//Duty valid between 1 and 16
+bool HT16K33::setBrightness(uint8_t duty)
 {
-	uint8_t duty;
-	read()
+	bool status = true;
+	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
+	{
+		if (setBrightnessDisplay(i, duty) == false)
+			status = false;
+	}
+	return status;
 }
+
+bool HT16K33::setBrightnessDisplay(uint8_t displayNumber, uint8_t duty)
+{
+	int temp = 0;
+	//Duty value is acceptable
+	if (1 <= duty <= 16)
+	{
+		//Based on datasheet
+		duty = duty + 223;
+	}
+	//else if duty value doesn't make sense, default to full brightness
+	else
+	{
+		duty = 239;
+	}
+
+	return (writeRAM(lookUpDisplayAddress(displayNumber), duty, (uint8_t *)&temp, 0));
+}
+
+//Parameter "rate" in Hz
+//Valid options for "rate" are defined by datasheet: 2, 1, or 0.5 Hz
+//Any other input to this function will result in steady alphanumeric display
+bool HT16K33::setBlinkRate(float rate)
+{
+	bool status = true;
+	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
+	{
+		if (setBlinkRateDisplay(i, rate) == false)
+			status = false;
+	}
+	return status;
+}
+
+bool HT16K33::setBlinkRateDisplay(uint8_t displayNumber, float rate)
+{
+	int temp = 0;
+
+	if (rate == 2)
+	{
+		blinkRate = 0b010;
+	}
+	else if (rate == 1)
+	{
+		blinkRate = 0b100;
+	}
+	else if (rate == 0.5)
+	{
+		blinkRate = 0b110;
+	}
+	//default to no blink
+	else
+	{
+		blinkRate = 0b000;
+	}
+
+	//If the display is blinking, then it must also be on
+	onState = 1;
+
+	uint8_t writeBlinkRate = 0b10000001 ^ blinkRate;
+	return (writeRAM(lookUpDisplayAddress(displayNumber), writeBlinkRate, (uint8_t *)&temp, 0));
+}
+
+bool HT16K33::allDisplaysOn()
+{
+	bool status = true;
+	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
+	{
+		if (singleDisplayOn(i) == false)
+			status = false;
+	}
+	onState = 1;
+	return status;
+}
+
+bool HT16K33::singleDisplayOn(uint8_t displayNumber)
+{
+	int temp = 0;
+	uint8_t state = 0b10000001 ^ blinkRate;
+	return (writeRAM(lookUpDisplayAddress(displayNumber), state, (uint8_t *)&temp, 0));
+}
+
+bool HT16K33::allDisplaysOff()
+{
+	bool status = true;
+	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
+	{
+		if (singleDisplayOff(i) == false)
+			status = false;
+	}
+	onState = 0;
+	return status;
+}
+
+bool HT16K33::singleDisplayOff(uint8_t displayNumber)
+{
+	int temp = 0;
+	uint8_t state = 0b10000000 ^ blinkRate;
+	return (writeRAM(lookUpDisplayAddress(displayNumber), state, (uint8_t *)&temp, 0));
+}
+
+/*---------------------------- Light up functions ---------------------------------*/
 
 void HT16K33::illuminateSegment(uint8_t segment, uint8_t digit)
 {
@@ -145,28 +320,28 @@ void HT16K33::illuminateSegment(uint8_t segment, uint8_t digit)
 		com = 2;
 	}
 
-	if (digit == 1)
+	if (digit == 0)
 	{
 		if (segment >= 'A' && segment <= 'G')
 			row = 8;
 		else
 			row = 9;
 	}
-	else if (digit == 2)
+	else if (digit == 1)
 	{
 		if (segment >= 'A' && segment <= 'G')
 			row = 7;
 		else
 			row = 10;
 	}
-	else if (digit == 3)
+	else if (digit == 2)
 	{
 		if (segment >= 'A' && segment <= 'G')
 			row = 2;
 		else
 			row = 3;
 	}
-	else if (digit == 4)
+	else if (digit == 3)
 	{
 		if (segment >= 'A' && segment <= 'G')
 			row = 0;
@@ -192,7 +367,6 @@ void HT16K33::illuminateSegment(uint8_t segment, uint8_t digit)
 
 	//Update displayRAM array
 	displayRAM[adr] = displayRAM[adr] ^ dat;
-	updateDisplay();
 }
 
 void HT16K33::illuminateChar(uint16_t disp, uint8_t digit)
@@ -336,28 +510,64 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 	illuminateChar(alphanumeric_segs[characterPosition], digit);
 }
 
-void HT16K33::printString(char *s, uint8_t n)
+/*
+ * Write a byte to the display.
+ * Required for Print.
+ */
+size_t HT16K33::write(uint8_t b)
 {
-	for (int i = 0; i < n; i++)
+	printChar(b, digitPosition++);
+	digitPosition %= sizeOfDisplay;
+
+	updateDisplay(); //Send RAM buffer over I2C bus
+} // write
+
+/*
+ * Write a character buffer to the display.
+ * Required for Print.
+ */
+size_t HT16K33::write(const uint8_t *buffer, size_t size)
+{
+	size_t n = size;
+
+	while (size--)
 	{
-		printChar(s[i], i + 1);
+		printChar(*buffer++, digitPosition++);
+		digitPosition %= sizeOfDisplay;
 	}
+	updateDisplay(); //Send RAM buffer over I2C bus
+	return n;
+} //write
+
+//Write a string to the display
+size_t HT16K33::write(const char *str)
+{
+	if (str == NULL)
+		return 0;
+	return write((const uint8_t *)str, strlen(str));
 }
 
 bool HT16K33::updateDisplay()
 {
-	return (write(0, (uint8_t *)displayRAM, (uint8_t)sizeof(displayRAM)));
+	bool status = true;
+	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
+	{
+		if (writeRAM(lookUpDisplayAddress(i), 0, (uint8_t *)displayRAM + (i * 16), 16) == false)
+			status = false;
+	}
+
+	return status;
 }
 
 /*----------------------- Internal I2C Abstraction -----------------------------*/
 
-bool HT16K33::read(uint8_t reg, uint8_t *buff, uint8_t buffSize)
+bool HT16K33::readRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffSize)
 {
-	_i2cPort->beginTransmission(_deviceAddress);
+	_i2cPort->beginTransmission(address);
 	_i2cPort->write(reg);
 	_i2cPort->endTransmission();
 
-	if (_i2cPort->requestFrom(_deviceAddress, buffSize) > 0)
+	if (_i2cPort->requestFrom(address, buffSize) > 0)
 	{
 		for (uint8_t i = 0; i < buffSize; i++)
 		{
@@ -369,16 +579,16 @@ bool HT16K33::read(uint8_t reg, uint8_t *buff, uint8_t buffSize)
 	return false;
 }
 
-//Overloaded function declaration
-//Use when reading just one byte of data
-bool HT16K33::read(uint8_t reg, uint8_t data)
-{
-	return (read(reg, (uint8_t *)&data, (uint8_t)sizeof(data)));
-}
+// //Overloaded function declaration
+// //Use when reading just one byte of data
+// bool HT16K33::read(uint8_t reg, uint8_t data)
+// {
+// 	return (read(reg, (uint8_t *)&data, (uint8_t)sizeof(data)));
+// }
 
-bool HT16K33::write(uint8_t reg, uint8_t *buff, uint8_t buffSize)
+bool HT16K33::writeRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffSize)
 {
-	_i2cPort->beginTransmission(_deviceAddress);
+	_i2cPort->beginTransmission(address);
 	_i2cPort->write(reg);
 
 	for (uint8_t i = 0; i < buffSize; i++)
@@ -394,9 +604,9 @@ bool HT16K33::write(uint8_t reg, uint8_t *buff, uint8_t buffSize)
 	return false;
 }
 
-//Overloaded function declaration
-//Use when writing just one byte of data
-bool HT16K33::write(uint8_t reg, uint8_t data)
-{
-	return (write(reg, (uint8_t *)&data, (uint8_t)sizeof(data)));
-}
+// //Overloaded function declaration
+// //Use when writing just one byte of data
+// bool HT16K33::writeRAM(uint8_t reg, uint8_t data)
+// {
+// 	return (writeRAM(reg, (uint8_t *)&data, (uint8_t)sizeof(data)));
+// }

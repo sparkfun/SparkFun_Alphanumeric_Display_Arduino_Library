@@ -22,45 +22,71 @@ Distributed as-is; no warranty is given.
 
 #include <Wire.h>
 #include <Arduino.h>
+#include <Stream.h>
 
 #define DEFAULT_ADDRESS 0x70 //Default I2C address when A0, A1 are floating
 #define DEV_ID 0x12          //Device ID that I just made up
+#define DEFAULT_NOTHING_ATTACHED 0xFF
 
-class HT16K33
+class HT16K33 : public Print
 {
 private:
-    TwoWire *_i2cPort;      //The generic connection to user's chosen I2C hardware
-    uint8_t _deviceAddress; // Address of alphanumeric display
+    TwoWire *_i2cPort;          //The generic connection to user's chosen I2C hardware
+    uint8_t _deviceAddressLeft; // Address of primary alphanumeric display
+    uint8_t _deviceAddressLeftCenter;
+    uint8_t _deviceAddressRightCenter;
+    uint8_t _deviceAddressRight;
+    uint8_t digitPosition = 0;
+    uint8_t sizeOfDisplay = 4;
+    //Start with display off
+    bool onState = 0;
+    //Start with no blinking
+    uint8_t blinkRate = 0b000;
+
+    //Enough RAM for up to 4 displays on same I2C bus
+    uint8_t displayRAM[16 * 4];
 
 public:
     //Device status
-    bool begin(uint8_t address = DEFAULT_ADDRESS, TwoWire &wirePort = Wire); // Sets the address of the device and opens the Wire port for communication
-    bool isConnected();
-    uint8_t deviceID();
-    bool checkDeviceID();
-    bool setI2Caddress(uint8_t address);
-    uint8_t getI2Caddress();
+    bool begin(uint8_t addressLeft = DEFAULT_ADDRESS,
+               uint8_t addressLeftCenter = DEFAULT_NOTHING_ATTACHED,
+               uint8_t addressRightCenter = DEFAULT_NOTHING_ATTACHED,
+               uint8_t addressRight = DEFAULT_NOTHING_ATTACHED,
+               TwoWire &wirePort = Wire); // Sets the address of the device and opens the Wire port for communication
+    bool isConnected(uint8_t address);
+    bool initialize(uint8_t address);
+    bool checkDeviceID(uint8_t address);
+    uint8_t lookUpDisplayAddress(uint8_t displayNumber);
 
-    //Configuration functions
-    bool initialize();
+    //Display configuration functions
     bool clearDisplay();
     bool setBrightness(uint8_t duty);
+    bool setBrightnessDisplay(uint8_t displayNumber, uint8_t duty);
     // uint8_t getBrightness();
-    // bool setBlinkRate(uint8_t rate);
+    bool setBlinkRate(float rate);
+    bool setBlinkRateDisplay(uint8_t displayNumber, float rate);
     // uint8_t getBlinkRate();
+    bool allDisplaysOn();
+    bool singleDisplayOn(uint8_t displayNumber);
+    bool allDisplaysOff();
+    bool singleDisplayOff(uint8_t displayNumber);
 
     //Light up functions
     void illuminateSegment(uint8_t segment, uint8_t digit);
     void illuminateChar(uint16_t disp, uint8_t digit);
     void printChar(uint8_t displayChar, uint8_t digit);
-    void printString(char *s, uint8_t n);
     bool updateDisplay();
 
+    // For print
+    virtual size_t write(uint8_t);
+    virtual size_t write(const uint8_t *buffer, size_t size);
+    virtual size_t write(const char *str);
+
     //I2C abstraction
-    bool read(uint8_t reg, uint8_t *buff, uint8_t buffSize);
-    bool read(uint8_t reg, uint8_t data);
-    bool write(uint8_t reg, uint8_t *buff, uint8_t buffSize);
-    bool write(uint8_t reg, uint8_t data);
+    bool readRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffSize);
+    // bool read(uint8_t reg, uint8_t data);
+    bool writeRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffSize);
+    // bool writeRAM(uint8_t reg, uint8_t data);
 };
 
 #endif
