@@ -66,9 +66,9 @@ public:
     bool setBlinkRate(float rate);
     bool setBlinkRateDisplay(uint8_t displayNumber, float rate);
     // uint8_t getBlinkRate();
-    bool allDisplaysOn();
+    bool displayOn();
     bool singleDisplayOn(uint8_t displayNumber);
-    bool allDisplaysOff();
+    bool displayOff();
     bool singleDisplayOff(uint8_t displayNumber);
 
     //Light up functions

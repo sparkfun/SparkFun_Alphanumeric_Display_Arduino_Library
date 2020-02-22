@@ -65,7 +65,7 @@ bool HT16K33::begin(uint8_t addressLeft, uint8_t addressLeftCenter, uint8_t addr
 		{
 			return false;
 		}
-		if (checkDeviceID(lookUpDisplayAddress(i) == false))
+		if (checkDeviceID(lookUpDisplayAddress(i)) == false)
 		{
 			return false;
 		}
@@ -91,7 +91,7 @@ bool HT16K33::isConnected(uint8_t address)
 bool HT16K33::initialize(uint8_t address)
 {
 	//We need this temp zero value when we only write one byte to HT16K33 RAM
-	int temp = 0;
+	uint8_t temp = 0;
 
 	//internal system clock enable
 	if (writeRAM(address, 0x21, (uint8_t *)&temp, 0) == false)
@@ -119,17 +119,21 @@ bool HT16K33::checkDeviceID(uint8_t address)
 {
 	uint8_t temp;
 	//Turn off display - DEBUG: should it be ALL or ONE?
-	allDisplaysOff();
+	displayOff();
 	//Write 0xAA to register 0
 	writeRAM(address, 0, 0xAA, 1);
+	Serial.println("Hello, successful write");
 	//Read it back, it should be 0xAA
 	readRAM(address, 0, (uint8_t *)&temp, sizeof((uint8_t)temp));
+	Serial.println("Helo, successful read");
+	Serial.print("This is what is in temp: 0x");
+	Serial.println(temp, HEX);
 	if (temp != 0xAA)
 		return false;
 	//Clear the write we just did
 	clearDisplay();
 	//Turn display back on
-	allDisplaysOn();
+	displayOn();
 	return true;
 }
 
@@ -239,7 +243,7 @@ bool HT16K33::setBlinkRateDisplay(uint8_t displayNumber, float rate)
 	return (writeRAM(lookUpDisplayAddress(displayNumber), writeBlinkRate, (uint8_t *)&temp, 0));
 }
 
-bool HT16K33::allDisplaysOn()
+bool HT16K33::displayOn()
 {
 	bool status = true;
 	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
@@ -258,7 +262,7 @@ bool HT16K33::singleDisplayOn(uint8_t displayNumber)
 	return (writeRAM(lookUpDisplayAddress(displayNumber), state, (uint8_t *)&temp, 0));
 }
 
-bool HT16K33::allDisplaysOff()
+bool HT16K33::displayOff()
 {
 	bool status = true;
 	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
@@ -272,6 +276,8 @@ bool HT16K33::allDisplaysOff()
 
 bool HT16K33::singleDisplayOff(uint8_t displayNumber)
 {
+	//DEBUGGING:
+	Serial.println("Turning single display off");
 	int temp = 0;
 	uint8_t state = 0b10000000 ^ blinkRate;
 	return (writeRAM(lookUpDisplayAddress(displayNumber), state, (uint8_t *)&temp, 0));
@@ -281,72 +287,27 @@ bool HT16K33::singleDisplayOff(uint8_t displayNumber)
 
 void HT16K33::illuminateSegment(uint8_t segment, uint8_t digit)
 {
-	//DEBUGGING
-	Serial.write(segment);
-	Serial.println();
-
-	//TODO: reassign pins on hardware to make this happen!
-	//segment = segment - 'A';
-
 	uint8_t com;
 	uint8_t row;
 
-	if (segment == 'A' || segment == 'I')
+	com = segment - 'A';
+	if (com > 6)
 	{
-		com = 6;
+		com = com - 7;
 	}
-	else if (segment == 'B' || segment == 'H')
-	{
-		com = 5;
-	}
-	else if (segment == 'C' || segment == 'J')
-	{
-		com = 3;
-	}
-	else if (segment == 'D' || segment == 'K')
-	{
-		com = 7;
-	}
-	else if (segment == 'E' || segment == 'L')
-	{
+	if (segment == 'I')
+		com = 0;
+	if (segment == 'H')
 		com = 1;
-	}
-	else if (segment == 'F' || segment == 'M')
-	{
-		com = 4;
-	}
-	else if (segment == 'G' || segment == 'N')
-	{
-		com = 2;
-	}
 
-	if (digit == 0)
+	row = digit;
+	if (segment > 'G')
+		row += 4;
+
+	//Decimal point/colon is pseudo-"fourth digit"
+	if (digit == 4)
 	{
-		if (segment >= 'A' && segment <= 'G')
-			row = 8;
-		else
-			row = 9;
-	}
-	else if (digit == 1)
-	{
-		if (segment >= 'A' && segment <= 'G')
-			row = 7;
-		else
-			row = 10;
-	}
-	else if (digit == 2)
-	{
-		if (segment >= 'A' && segment <= 'G')
-			row = 2;
-		else
-			row = 3;
-	}
-	else if (digit == 3)
-	{
-		if (segment >= 'A' && segment <= 'G')
-			row = 0;
-		else
-			row = 4;
+		row = 8;
 	}
 
 	uint8_t dat;
@@ -384,7 +345,7 @@ void HT16K33::illuminateChar(uint16_t disp, uint8_t digit)
 
 void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 {
-	static uint16_t alphanumeric_segs[88]{
+	static uint16_t alphanumeric_segs[89]{
 		0b1001101001110,  //'#'
 		0b1001101101101,  //'$'
 		0b10010000100100, //'%'
@@ -396,7 +357,7 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 		0b1001101000000,  //'+'
 		0b10000000000000, //','
 		0b101000000,	  //'-'
-
+		0b10,			  //'.' - DEBUG: need to test
 		0b10010000000000, //'/'
 		0b111111,		  //'0'
 		0b10000000110,	//'1'
@@ -408,7 +369,7 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 		0b1010000000001,  //'7'
 		0b101111111,	  //'8'
 		0b101100111,	  //'9'
-		0b1001000000000,  //':'
+		0b1,			  //':' - DEBUG: need to test
 		0b10001000000000, //';'
 		0b110000000000,   //'<'
 		0b101001000,	  //'='
@@ -482,30 +443,31 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 	uint16_t characterPosition = 0;
 
 	//Symbols
-	if (displayChar >= '#' && displayChar <= '-')
+	if (displayChar >= '#' && displayChar <= '>')
 	{
 		characterPosition = displayChar - '#';
-	}
-	//Symbols + digits
-	else if (displayChar >= '/' && displayChar <= '>')
-	{
-		characterPosition = displayChar - '/' + 11;
 	}
 	//Upper case letters + symbols
 	else if (displayChar >= 'A' && displayChar <= ']')
 	{
-		characterPosition = displayChar - 'A' + 11 + 16;
+		characterPosition = displayChar - 'A' + 28;
 	}
 	//Symbols + lower case letters
 	else
 	{
-		characterPosition = displayChar - '_' + 11 + 16 + 29;
+		characterPosition = displayChar - '_' + 28 + 29;
 	}
 
 	//DEBUG: this doesn't quite work the way I think it should
 	//User wants to display unknown character
 	if (characterPosition > sizeof(alphanumeric_segs))
 		characterPosition = SFE_ALPHANUM_UNKNOWN_CHAR;
+
+	//Special characters '.' and ':'
+	if (characterPosition == 11 | characterPosition == 23)
+	{
+		digit = 4;
+	}
 
 	illuminateChar(alphanumeric_segs[characterPosition], digit);
 }

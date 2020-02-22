@@ -38,7 +38,7 @@ void setup() {
   //Acceptable options are defined by HT16K33 datasheet and are 0.5, 1, or 2 Hz
   display.setBlinkRate(2);
 
-  display.print("YIKE");
+  display.print("whew");
 }
 
 void loop() {
