@@ -1,13 +1,13 @@
 /******************************************************************************
-SparkFunTMP117.cpp
-SparkFunTMP117 Library Source File
-Madison Chodikov @ SparkFun Electronics
-Original Creation Date: October 13, 2019
+SparkFun_Alphanumeric_Display.cpp
+SparkFun Alphanumeric Display Library Source File
+Priyanka Makin @ SparkFun Electronics
+Original Creation Date: February 25, 2020
 ***Include GitHub Repo link here***
 
 This file implements all functions of the HT16K33 class. Functions here range
-from writing to the Alphanumeric Display, changing the brightness, setting the
-oscillation on, and writing to the various settings with the HT16K33
+from printing to one or more Alphanumeric Displays, changing the display settings, and writing/
+reading the RAM of the HT16K33.
 
 Development environment specifics:
 	IDE: Arduino 1.8.9
@@ -19,16 +19,11 @@ local, and you've found our code helpful, please buy us a round!
 
 Distributed as-is; no warranty is given.
 ******************************************************************************/
+
 #include <SparkFun_Alphanumeric_Display.h>
 
 /*--------------------------- Device Status----------------------------------*/
-/* BEGIN
-    This function checks if the TMP will ACK over I2C, and
-	if the TMP will correctly self-identify with the proper
-	device ID. This will set the address of the device along 
-	with setting the wire for the I2C Communication. 
-	This will return true if both checks pass.
-*/
+
 bool HT16K33::begin(uint8_t addressLeft, uint8_t addressLeftCenter, uint8_t addressRightCenter, uint8_t addressRight, TwoWire &wirePort)
 {
 
@@ -48,6 +43,7 @@ bool HT16K33::begin(uint8_t addressLeft, uint8_t addressLeftCenter, uint8_t addr
 	else if (_deviceAddressLeftCenter != DEFAULT_NOTHING_ATTACHED)
 	{
 		sizeOfDisplay = 8;
+		Serial.println("Hello, I've increased sizeOfDisplay");
 	}
 
 	//TODO: try to figure this out
@@ -57,16 +53,21 @@ bool HT16K33::begin(uint8_t addressLeft, uint8_t addressLeftCenter, uint8_t addr
 
 	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
 	{
-		if (isConnected(lookUpDisplayAddress(i)) == false)
+		if (isConnected(i) == false)
 		{
+			Serial.println(i);
+			Serial.println("Hello, I've failed isConnected()");
 			return false;
 		}
-		if (initialize(lookUpDisplayAddress(i)) == false)
+		if (initialize(i) == false)
 		{
+			Serial.println(i);
+			Serial.println("Hello, I've failed initialize()");
 			return false;
 		}
-		if (checkDeviceID(lookUpDisplayAddress(i)) == false)
+		if (checkDeviceID(i) == false)
 		{
+			Serial.println("Hello, I've failed checkDeviceID()");
 			return false;
 		}
 	}
@@ -75,21 +76,19 @@ bool HT16K33::begin(uint8_t addressLeft, uint8_t addressLeftCenter, uint8_t addr
 	return true;
 }
 
-//DEBUG: DO WE HAVE TO DO ANY OF THIS CHECK_ID STUFF??!
-bool HT16K33::isConnected(uint8_t address)
+bool HT16K33::isConnected(uint8_t displayNumber)
 {
-	_i2cPort->beginTransmission(address);
+	_i2cPort->beginTransmission(lookUpDisplayAddress(displayNumber));
 	if (_i2cPort->endTransmission() == 0)
 	{
-		//Check that we are talking to the right thing. Is the device ID what we expect?
-		// if (checkDeviceID() == true)
 		return true;
 	}
 	return false;
 }
 
-bool HT16K33::initialize(uint8_t address)
+bool HT16K33::initialize(uint8_t displayNumber)
 {
+	uint8_t address = lookUpDisplayAddress(displayNumber);
 	//We need this temp zero value when we only write one byte to HT16K33 RAM
 	uint8_t temp = 0;
 
@@ -100,13 +99,15 @@ bool HT16K33::initialize(uint8_t address)
 	if (writeRAM(address, 0xA0, (uint8_t *)&temp, 0) == false)
 		return false;
 	//Set brightness of display by duty cycle
-	if (setBrightness(16) == false)
+	if (setBrightnessDisplay(displayNumber, 16) == false)
 	{
+		Serial.println("I've failed setBrightness()");
 		return false;
 	}
 	//Blinking set - blinking off, display on
-	if (setBlinkRate(0) == false)
+	if (setBlinkRateDisplay(displayNumber, 0) == false)
 	{
+		Serial.println("I've failed setBlinkRate()");
 		blinkRate = 0b000;
 		onState = 1;
 		return false;
@@ -115,20 +116,18 @@ bool HT16K33::initialize(uint8_t address)
 }
 
 //Verify that all objects on I2C bus are alphanumeric displays
-bool HT16K33::checkDeviceID(uint8_t address)
+bool HT16K33::checkDeviceID(uint8_t displayNumber)
 {
+	uint8_t address = lookUpDisplayAddress(displayNumber);
+	uint8_t test = 0xAA;
 	uint8_t temp;
 	//Turn off display - DEBUG: should it be ALL or ONE?
 	displayOff();
 	//Write 0xAA to register 0
-	writeRAM(address, 0, 0xAA, 1);
-	Serial.println("Hello, successful write");
+	writeRAM(address, 0, (uint8_t *)&test, 1);
 	//Read it back, it should be 0xAA
 	readRAM(address, 0, (uint8_t *)&temp, sizeof((uint8_t)temp));
-	Serial.println("Helo, successful read");
-	Serial.print("This is what is in temp: 0x");
-	Serial.println(temp, HEX);
-	if (temp != 0xAA)
+	if (temp != test)
 		return false;
 	//Clear the write we just did
 	clearDisplay();
@@ -326,8 +325,19 @@ void HT16K33::illuminateSegment(uint8_t segment, uint8_t digit)
 	}
 	dat = 1 << row;
 
+	uint8_t displayNumber;
+
+	//what display are we trying to light up??
+	if (digitPosition > 0 && digitPosition < 5)
+		displayNumber = 0;
+	//on second display
+	else if (digitPosition > 4)
+	{
+		displayNumber = 1;
+	}
+
 	//Update displayRAM array
-	displayRAM[adr] = displayRAM[adr] ^ dat;
+	displayRAM[16 * displayNumber + adr] = displayRAM[16 * displayNumber + adr] ^ (dat >> 16 * displayNumber);
 }
 
 void HT16K33::illuminateChar(uint16_t disp, uint8_t digit)
@@ -341,11 +351,13 @@ void HT16K33::illuminateChar(uint16_t disp, uint8_t digit)
 	}
 }
 
-#define SFE_ALPHANUM_UNKNOWN_CHAR 87
+#define SFE_ALPHANUM_UNKNOWN_CHAR 89
 
 void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 {
-	static uint16_t alphanumeric_segs[89]{
+	static uint16_t alphanumeric_segs[90]{
+		0b00000000000000, //' ' (space)
+
 		0b1001101001110,  //'#'
 		0b1001101101101,  //'$'
 		0b10010000100100, //'%'
@@ -440,31 +452,38 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 		0b11111111111111, //Unknown character
 	};
 
-	uint16_t characterPosition = 0;
+	uint16_t characterPosition = 65535;
 
+	//space
+	if (displayChar == ' ')
+		characterPosition = 0;
 	//Symbols
-	if (displayChar >= '#' && displayChar <= '>')
+	else if (displayChar >= '#' && displayChar <= '>')
 	{
-		characterPosition = displayChar - '#';
+		characterPosition = displayChar - '#' + 1;
 	}
 	//Upper case letters + symbols
 	else if (displayChar >= 'A' && displayChar <= ']')
 	{
-		characterPosition = displayChar - 'A' + 28;
+		characterPosition = displayChar - 'A' + 1 + 28;
 	}
 	//Symbols + lower case letters
 	else
 	{
-		characterPosition = displayChar - '_' + 28 + 29;
+		characterPosition = displayChar - '_' + 1 + 28 + 29;
 	}
 
-	//DEBUG: this doesn't quite work the way I think it should
 	//User wants to display unknown character
-	if (characterPosition > sizeof(alphanumeric_segs))
+	//If the current character was not defined in alphanumeric_segs
+	if (characterPosition = 65535)
 		characterPosition = SFE_ALPHANUM_UNKNOWN_CHAR;
 
-	//Special characters '.' and ':'
-	if (characterPosition == 11 | characterPosition == 23)
+	//Digit keeps track of the digit we are illuminating on each individual display
+	//Can only be either 0, 1, 2, or 3
+	digit %= 4;
+
+	//Take care of pecial characters/segments '.' and ':'
+	if (characterPosition == 12 | characterPosition == 24)
 	{
 		digit = 4;
 	}
@@ -478,8 +497,13 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
  */
 size_t HT16K33::write(uint8_t b)
 {
-	printChar(b, digitPosition++);
-	digitPosition %= sizeOfDisplay;
+	if (b == '.' | b == ':')
+		printChar(b, 1);
+	else
+	{
+		printChar(b, digitPosition++);
+		digitPosition %= sizeOfDisplay;
+	}
 
 	updateDisplay(); //Send RAM buffer over I2C bus
 } // write
@@ -491,11 +515,20 @@ size_t HT16K33::write(uint8_t b)
 size_t HT16K33::write(const uint8_t *buffer, size_t size)
 {
 	size_t n = size;
+	uint8_t buff;
 
 	while (size--)
 	{
-		printChar(*buffer++, digitPosition++);
-		digitPosition %= sizeOfDisplay;
+		buff = *buffer++;
+		if (buff == '.')
+			printChar('.', 1);
+		else if (buff == ':')
+			printChar(':', 1);
+		else
+		{
+			printChar(buff, digitPosition++);
+			digitPosition %= sizeOfDisplay;
+		}
 	}
 	updateDisplay(); //Send RAM buffer over I2C bus
 	return n;
@@ -507,15 +540,19 @@ size_t HT16K33::write(const char *str)
 	if (str == NULL)
 		return 0;
 	return write((const uint8_t *)str, strlen(str));
-}
+} //write
 
 bool HT16K33::updateDisplay()
 {
 	bool status = true;
 	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
 	{
+		Serial.println("in updateDisplay()");
 		if (writeRAM(lookUpDisplayAddress(i), 0, (uint8_t *)displayRAM + (i * 16), 16) == false)
+		{
+			Serial.println("Hello, I'm failing updateDisplay");
 			status = false;
+		}
 	}
 
 	return status;

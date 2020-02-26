@@ -53,9 +53,9 @@ public:
                uint8_t addressRightCenter = DEFAULT_NOTHING_ATTACHED,
                uint8_t addressRight = DEFAULT_NOTHING_ATTACHED,
                TwoWire &wirePort = Wire); // Sets the address of the device and opens the Wire port for communication
-    bool isConnected(uint8_t address);
-    bool initialize(uint8_t address);
-    bool checkDeviceID(uint8_t address);
+    bool isConnected(uint8_t displayNumber);
+    bool initialize(uint8_t displayNumber);
+    bool checkDeviceID(uint8_t displayNumber);
     uint8_t lookUpDisplayAddress(uint8_t displayNumber);
 
     //Display configuration functions

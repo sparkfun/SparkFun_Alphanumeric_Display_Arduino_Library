@@ -36,9 +36,19 @@ void setup() {
   display.setBrightness(10);
   //Blink rate in Hz
   //Acceptable options are defined by HT16K33 datasheet and are 0.5, 1, or 2 Hz
-  display.setBlinkRate(2);
+//  display.setBlinkRate(2);
 
-  display.print("whew");
+  //Writing single characters works!
+//  display.write(':');
+//  display.write('.');
+//  display.write('1');
+//  display.write('2');
+//  display.write('3');
+//  display.write('4');
+//  display.write('5');
+  
+//  display.print("YUKC");
+  display.print("12:3.4");
 }
 
 void loop() {
