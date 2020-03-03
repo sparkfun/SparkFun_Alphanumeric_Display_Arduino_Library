@@ -46,6 +46,7 @@ typedef enum
 {
     ALPHA_CMD_SYSTEM_SETUP = 0b00100000,
     ALPHA_CMD_DISPLAY_SETUP = 0b10000000,
+    ALPHA_CMD_DIMMING_SETUP = 0b11100000,
 };
 
 // class HT16K33
@@ -73,23 +74,28 @@ public:
                uint8_t addressRight = DEFAULT_NOTHING_ATTACHED,
                TwoWire &wirePort = Wire); // Sets the address of the device and opens the Wire port for communication
     bool isConnected(uint8_t displayNumber);
-    bool initialize(uint8_t displayNumber);
+    bool initialize();
     bool checkDeviceID(uint8_t displayNumber);
     uint8_t lookUpDisplayAddress(uint8_t displayNumber);
 
     //Display configuration functions
     bool clearDisplay();
     bool setBrightness(uint8_t duty);
-    bool setBrightnessDisplay(uint8_t displayNumber, uint8_t duty);
+    bool setBrightnessSingle(uint8_t displayNumber, uint8_t duty);
     // uint8_t getBrightness();
     bool setBlinkRate(float rate);
-    bool setBlinkRateDisplay(uint8_t displayNumber, float rate);
+    bool setBlinkRateSingle(uint8_t displayNumber, float rate);
     // uint8_t getBlinkRate();
     bool displayOn();
-    bool singleDisplayOn(uint8_t displayNumber);
     bool displayOff();
-    bool singleDisplayOff(uint8_t displayNumber);
-    bool setSingleDisplayOn(uint8_t displayNumber, bool turnOnDisplay);
+    bool displayOnSingle(uint8_t displayNumber);
+    bool displayOffSingle(uint8_t displayNumber);
+    bool setDisplayOnOff(uint8_t displayNumber, bool turnOnDisplay);
+
+    bool enableSystemClock();
+    bool disableSystemClock();
+    bool enableSystemClockSingle(uint8_t displayNumber);
+    bool disableSystemClockSingle(uint8_t displayNumber);
 
     //Light up functions
     void illuminateSegment(uint8_t segment, uint8_t digit);
