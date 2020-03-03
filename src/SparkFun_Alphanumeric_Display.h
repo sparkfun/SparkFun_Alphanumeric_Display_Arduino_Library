@@ -28,6 +28,7 @@ Distributed as-is; no warranty is given.
 #define DEV_ID 0x12          //Device ID that I just made up
 #define DEFAULT_NOTHING_ATTACHED 0xFF
 
+// class HT16K33
 class HT16K33 : public Print
 {
 private:
@@ -86,6 +87,7 @@ public:
     bool readRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffSize);
     // bool read(uint8_t reg, uint8_t data);
     bool writeRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffSize);
+    bool writeOne(uint8_t address, uint8_t reg);
     // bool writeRAM(uint8_t reg, uint8_t data);
 };
 
