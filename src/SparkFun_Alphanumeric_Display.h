@@ -59,7 +59,7 @@ private:
     uint8_t _deviceAddressRightCenter;
     uint8_t _deviceAddressRight;
     uint8_t digitPosition = 0;
-    uint8_t sizeOfDisplay = 4;
+    uint8_t numberOfDisplays = 1;
     bool displayOnOff = 0;                        //Tracks display on/off bit of display setup register
     uint8_t blinkRate = ALPHA_BLINK_RATE_NOBLINK; //Tracks blink bits in display setup register
 
@@ -79,7 +79,7 @@ public:
     uint8_t lookUpDisplayAddress(uint8_t displayNumber);
 
     //Display configuration functions
-    bool clearDisplay();
+    bool clear();
     bool setBrightness(uint8_t duty);
     bool setBrightnessSingle(uint8_t displayNumber, uint8_t duty);
     // uint8_t getBrightness();

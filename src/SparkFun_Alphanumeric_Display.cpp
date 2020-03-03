@@ -33,22 +33,22 @@ bool HT16K33::begin(uint8_t addressLeft, uint8_t addressLeftCenter, uint8_t addr
 	_deviceAddressRight = addressRight;				//grab the address of the alphanumeric
 
 	if (_deviceAddressRight != DEFAULT_NOTHING_ATTACHED)
-		sizeOfDisplay = 16;
+		numberOfDisplays = 4;
 	else if (_deviceAddressRightCenter != DEFAULT_NOTHING_ATTACHED)
-		sizeOfDisplay = 12;
+		numberOfDisplays = 3;
 	else if (_deviceAddressLeftCenter != DEFAULT_NOTHING_ATTACHED)
-		sizeOfDisplay = 8;
+		numberOfDisplays = 2;
 	else
-		sizeOfDisplay = 4;
+		numberOfDisplays = 1;
 
 	//TODO: malloc more displayRAM
 
-	Serial.print("sizeOfDisplay: ");
-	Serial.println(sizeOfDisplay);
+	Serial.print("numberOfDisplays: ");
+	Serial.println(numberOfDisplays);
 
 	_i2cPort = &wirePort; //Remember the user's setting
 
-	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
+	for (uint8_t i = 0; i < numberOfDisplays; i++)
 	{
 		if (isConnected(i) == false)
 		{
@@ -70,7 +70,7 @@ bool HT16K33::begin(uint8_t addressLeft, uint8_t addressLeftCenter, uint8_t addr
 		return false;
 	}
 
-	// clearDisplay();
+	// clear();
 	return true;
 }
 
@@ -94,11 +94,6 @@ bool HT16K33::initialize()
 		Serial.println("I've failed enableSystemClock()");
 		return false;
 	}
-
-	//ROW/INT output pin set, INT pin output level set
-	// uint8_t temp = 0;
-	// if (writeRAM(address, 0xA0, (uint8_t *)&temp, 0) == false)
-	// 	return false;
 
 	//Set brightness of all displays to full brightness
 	if (setBrightness(16) == false)
@@ -140,7 +135,7 @@ bool HT16K33::initialize()
 // 		return false;
 // 	//DEBUGGING: taking this out for now... can't call this write to ALL displays when we haven't initalized all displays yet!
 // 	//Clear the write we just did
-// 	// clearDisplay();
+// 	// clear();
 // 	//Turn display back on
 // 	singleDisplayOn(displayNumber);
 // 	return true;
@@ -149,7 +144,7 @@ bool HT16K33::initialize()
 bool HT16K33::enableSystemClock()
 {
 	bool status = true;
-	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
+	for (uint8_t i = 0; i < numberOfDisplays; i++)
 	{
 		if (enableSystemClockSingle(i) == false)
 			status = false;
@@ -160,7 +155,7 @@ bool HT16K33::enableSystemClock()
 bool HT16K33::disableSystemClock()
 {
 	bool status = true;
-	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
+	for (uint8_t i = 0; i < numberOfDisplays; i++)
 	{
 		if (enableSystemClockSingle(i) == false)
 			status = false;
@@ -205,15 +200,14 @@ uint8_t HT16K33::lookUpDisplayAddress(uint8_t displayNumber)
 
 /*-------------------------- Display configuration functions ---------------------------*/
 
-bool HT16K33::clearDisplay()
+bool HT16K33::clear()
 {
-	for (uint8_t i = 0; i < 16 * sizeOfDisplay / 4; i++)
-	{
-		//Clear the displayRAM array
+	//Clear the displayRAM array
+	for (uint8_t i = 0; i < 16 * (numberOfDisplays); i++)
 		displayRAM[i] = 0;
-		// write(i, (uint8_t *)&temp, (uint8_t)sizeof(temp));
-	}
+
 	updateDisplay();
+
 	digitPosition = 0;
 }
 
@@ -221,7 +215,7 @@ bool HT16K33::clearDisplay()
 bool HT16K33::setBrightness(uint8_t duty)
 {
 	bool status = true;
-	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
+	for (uint8_t i = 0; i < numberOfDisplays; i++)
 	{
 		if (setBrightnessSingle(i, duty) == false)
 			status = false;
@@ -246,7 +240,7 @@ bool HT16K33::setBrightnessSingle(uint8_t displayNumber, uint8_t duty)
 bool HT16K33::setBlinkRate(float rate)
 {
 	bool status = true;
-	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
+	for (uint8_t i = 0; i < numberOfDisplays; i++)
 	{
 		if (setBlinkRateSingle(i, rate) == false)
 			status = false;
@@ -311,7 +305,7 @@ bool HT16K33::displayOn()
 
 	displayOnOff = ALPHA_DISPLAY_ON;
 
-	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
+	for (uint8_t i = 0; i < numberOfDisplays; i++)
 	{
 		if (displayOnSingle(i) == false)
 			status = false;
@@ -326,7 +320,7 @@ bool HT16K33::displayOff()
 
 	displayOnOff = ALPHA_DISPLAY_OFF;
 
-	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
+	for (uint8_t i = 0; i < numberOfDisplays; i++)
 	{
 		if (displayOffSingle(i) == false)
 			status = false;
@@ -560,7 +554,7 @@ size_t HT16K33::write(uint8_t b)
 	// else
 	// {
 	printChar(b, digitPosition++);
-	digitPosition %= sizeOfDisplay;
+	digitPosition %= (numberOfDisplays * 4); //Convert displays to number of digits
 	// }
 
 	updateDisplay(); //Send RAM buffer over I2C bus
@@ -585,7 +579,7 @@ size_t HT16K33::write(const uint8_t *buffer, size_t size)
 		// else
 		// {
 		printChar(buff, digitPosition++);
-		digitPosition %= sizeOfDisplay;
+		digitPosition %= (numberOfDisplays * 4);
 		// }
 	}
 	updateDisplay(); //Send RAM buffer over I2C bus
@@ -603,7 +597,7 @@ size_t HT16K33::write(const char *str)
 bool HT16K33::updateDisplay()
 {
 	bool status = true;
-	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
+	for (uint8_t i = 0; i < numberOfDisplays; i++)
 	{
 		if (writeRAM(lookUpDisplayAddress(i), 0, (uint8_t *)displayRAM + (i * 16), 16) == false)
 		{
