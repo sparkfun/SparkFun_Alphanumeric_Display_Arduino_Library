@@ -43,24 +43,23 @@ bool HT16K33::begin(uint8_t addressLeft, uint8_t addressLeftCenter, uint8_t addr
 
 	//TODO: malloc more displayRAM
 
-	//DEBUGGING
 	Serial.print("sizeOfDisplay: ");
 	Serial.println(sizeOfDisplay);
 
-	_i2cPort = &wirePort; //assign the port
+	_i2cPort = &wirePort; //Remember the user's setting
 
 	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
 	{
 		if (isConnected(i) == false)
 		{
+			Serial.print("Failed isConnected() on displayNumber: ");
 			Serial.println(i);
-			Serial.println("Hello, I've failed isConnected()");
 			return false;
 		}
 		if (initialize(i) == false)
 		{
+			Serial.print("Failed initialize() on displayNumber: ");
 			Serial.println(i);
-			Serial.println("Hello, I've failed initialize()");
 			return false;
 		}
 		// if (checkDeviceID(i) == false)
@@ -77,13 +76,6 @@ bool HT16K33::begin(uint8_t addressLeft, uint8_t addressLeftCenter, uint8_t addr
 
 bool HT16K33::isConnected(uint8_t displayNumber)
 {
-
-	//DEBUGGING
-	Serial.print("DisplayNumber: ");
-	Serial.println(displayNumber);
-	Serial.print("Address: 0x");
-	Serial.println(lookUpDisplayAddress(displayNumber), HEX);
-
 	_i2cPort->beginTransmission(lookUpDisplayAddress(displayNumber));
 	if (_i2cPort->endTransmission() == 0)
 		return true;
@@ -581,7 +573,6 @@ bool HT16K33::updateDisplay()
 	bool status = true;
 	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
 	{
-		Serial.println("in updateDisplay()");
 		if (writeRAM(lookUpDisplayAddress(i), 0, (uint8_t *)displayRAM + (i * 16), 16) == false)
 		{
 			Serial.print("Hello, I'm failing updateDisplay at display 0x");
