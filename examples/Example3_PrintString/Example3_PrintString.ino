@@ -16,28 +16,29 @@
  * 
  * Distributed as-is; no warranty is given.
  ****************************************************************************************/
-#include <SparkFun_Alphanumeric_Display.h>
+#include <Wire.h>
+
+#include <SparkFun_Alphanumeric_Display.h> //Click here to get the library:
 HT16K33 display;
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
   Serial.println("Qwiic Alphanumeric examples");
+
   Wire.begin(); //Join I2C bus
 
-  //check if display will acknowledge
   if (display.begin() == false)
   {
     Serial.println("Device did not acknowledge! Freezing.");
-    while(1);
+    while (1)
+      ;
   }
-  Serial.println("Display acknnowledged.");
+  Serial.println("Display acknowledged.");
 
-//  display.print("Hello World!");
-  display.print("Hell");
-//  display.write('l');
-//  display.write('a');
-//  display.write('D');
+  display.print("Milk");
 }
 
-void loop(){  
+void loop()
+{
 }

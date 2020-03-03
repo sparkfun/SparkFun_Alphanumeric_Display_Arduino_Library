@@ -28,6 +28,26 @@ Distributed as-is; no warranty is given.
 #define DEV_ID 0x12          //Device ID that I just made up
 #define DEFAULT_NOTHING_ATTACHED 0xFF
 
+typedef enum
+{
+    ALPHA_BLINK_RATE_NOBLINK = 0b00,
+    ALPHA_BLINK_RATE_2HZ = 0b01,
+    ALPHA_BLINK_RATE_1HZ = 0b10,
+    ALPHA_BLINK_RATE_0_5HZ = 0b11,
+};
+
+typedef enum
+{
+    ALPHA_DISPLAY_ON = 0b1,
+    ALPHA_DISPLAY_OFF = 0b0,
+};
+
+typedef enum
+{
+    ALPHA_CMD_SYSTEM_SETUP = 0b00100000,
+    ALPHA_CMD_DISPLAY_SETUP = 0b10000000,
+};
+
 // class HT16K33
 class HT16K33 : public Print
 {
@@ -39,10 +59,8 @@ private:
     uint8_t _deviceAddressRight;
     uint8_t digitPosition = 0;
     uint8_t sizeOfDisplay = 4;
-    //Start with display off
-    bool onState = 0;
-    //Start with no blinking
-    uint8_t blinkRate = 0b000;
+    bool displayOnOff = 0;                        //Tracks display on/off bit of display setup register
+    uint8_t blinkRate = ALPHA_BLINK_RATE_NOBLINK; //Tracks blink bits in display setup register
 
     //Enough RAM for up to 4 displays on same I2C bus
     uint8_t displayRAM[16 * 4];
@@ -71,6 +89,7 @@ public:
     bool singleDisplayOn(uint8_t displayNumber);
     bool displayOff();
     bool singleDisplayOff(uint8_t displayNumber);
+    bool setSingleDisplayOn(uint8_t displayNumber, bool turnOnDisplay);
 
     //Light up functions
     void illuminateSegment(uint8_t segment, uint8_t digit);

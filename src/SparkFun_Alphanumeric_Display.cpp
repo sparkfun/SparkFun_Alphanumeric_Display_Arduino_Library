@@ -33,21 +33,15 @@ bool HT16K33::begin(uint8_t addressLeft, uint8_t addressLeftCenter, uint8_t addr
 	_deviceAddressRight = addressRight;				//grab the address of the alphanumeric
 
 	if (_deviceAddressRight != DEFAULT_NOTHING_ATTACHED)
-	{
 		sizeOfDisplay = 16;
-	}
 	else if (_deviceAddressRightCenter != DEFAULT_NOTHING_ATTACHED)
-	{
 		sizeOfDisplay = 12;
-	}
 	else if (_deviceAddressLeftCenter != DEFAULT_NOTHING_ATTACHED)
-	{
 		sizeOfDisplay = 8;
-		Serial.println("Hello, I've increased sizeOfDisplay");
-	}
+	else
+		sizeOfDisplay = 4;
 
-	//TODO: try to figure this out
-	//malloc more displayRAM
+	//TODO: malloc more displayRAM
 
 	//DEBUGGING
 	Serial.print("sizeOfDisplay: ");
@@ -92,45 +86,48 @@ bool HT16K33::isConnected(uint8_t displayNumber)
 
 	_i2cPort->beginTransmission(lookUpDisplayAddress(displayNumber));
 	if (_i2cPort->endTransmission() == 0)
-	{
 		return true;
-	}
 	return false;
 }
 
 bool HT16K33::initialize(uint8_t displayNumber)
 {
-	//DEBUGGIN
-	Serial.println("In initialize()");
-
 	uint8_t address = lookUpDisplayAddress(displayNumber);
 
-	Serial.print("The current address is: 0x");
+	Serial.print("Initialize: 0x");
 	Serial.println(address, HEX);
-
-	//We need this temp zero value when we only write one byte to HT16K33 RAM
-	uint8_t temp = 0;
 
 	//internal system clock enable
 	if (writeOne(address, 0x21) == false)
 		return false;
-	// //ROW/INT output pin set, INT pin output level set
-	// if (writeRAM(address, 0xA0, (uint8_t *)&temp, 0) == false)
-	// 	return false;
-	// //Set brightness of display by duty cycle
-	// if (setBrightnessDisplay(displayNumber, 16) == false)
-	// {
-	// 	Serial.println("I've failed setBrightness()");
-	// 	return false;
-	// }
-	// //Blinking set - blinking off, display on
-	// if (setBlinkRateDisplay(displayNumber, 0) == false)
-	// {
-	// 	Serial.println("I've failed setBlinkRate()");
-	// 	blinkRate = 0b000;
-	// 	onState = 1;
-	// 	return false;
-	// }
+
+	//ROW/INT output pin set, INT pin output level set
+	uint8_t temp = 0;
+	if (writeRAM(address, 0xA0, (uint8_t *)&temp, 0) == false)
+		return false;
+
+	//Set brightness of display by duty cycle
+	if (setBrightnessDisplay(displayNumber, 16) == false)
+	{
+		Serial.println("I've failed setBrightness()");
+		return false;
+	}
+
+	//Blinking set - blinking off, display on
+	if (setBlinkRateDisplay(displayNumber, 0) == false)
+	{
+		Serial.println("I've failed setBlinkRate()");
+		blinkRate = ALPHA_BLINK_RATE_NOBLINK;
+		displayOnOff = 1;
+		return false;
+	}
+
+	if (singleDisplayOn(displayNumber) == false)
+	{
+		Serial.println("Failed display on");
+		return false;
+	}
+
 	return true;
 }
 
@@ -239,67 +236,79 @@ bool HT16K33::setBlinkRateDisplay(uint8_t displayNumber, float rate)
 
 	if (rate == 2)
 	{
-		blinkRate = 0b010;
+		blinkRate = ALPHA_BLINK_RATE_2HZ;
 	}
 	else if (rate == 1)
 	{
-		blinkRate = 0b100;
+		blinkRate = ALPHA_BLINK_RATE_1HZ;
 	}
 	else if (rate == 0.5)
 	{
-		blinkRate = 0b110;
+		blinkRate = ALPHA_BLINK_RATE_0_5HZ;
 	}
 	//default to no blink
 	else
 	{
-		blinkRate = 0b000;
+		blinkRate = ALPHA_BLINK_RATE_NOBLINK;
 	}
 
-	//If the display is blinking, then it must also be on
-	onState = 1;
+	uint8_t dataToWrite = ALPHA_CMD_DISPLAY_SETUP | (blinkRate << 1) | displayOnOff;
 
-	uint8_t writeBlinkRate = 0b10000001 ^ blinkRate;
-	return (writeRAM(lookUpDisplayAddress(displayNumber), writeBlinkRate, (uint8_t *)&temp, 0));
+	return (writeRAM(lookUpDisplayAddress(displayNumber), dataToWrite, (uint8_t *)&temp, 0));
 }
 
+bool HT16K33::singleDisplayOn(uint8_t displayNumber)
+{
+	return setSingleDisplayOn(displayNumber, true);
+}
+bool HT16K33::singleDisplayOff(uint8_t displayNumber)
+{
+	return setSingleDisplayOn(displayNumber, false);
+}
+
+//Set or clear the display on/off bit of a given display number
+bool HT16K33::setSingleDisplayOn(uint8_t displayNumber, bool turnOnDisplay)
+{
+	if (turnOnDisplay == true)
+		displayOnOff = ALPHA_DISPLAY_ON;
+	else
+		displayOnOff = ALPHA_DISPLAY_OFF;
+
+	int temp = 0;
+	uint8_t dataToWrite = ALPHA_CMD_DISPLAY_SETUP | (blinkRate << 1) | displayOnOff;
+
+	return (writeRAM(lookUpDisplayAddress(displayNumber), dataToWrite, (uint8_t *)&temp, 0));
+}
+
+//Turn on/off the entire display
 bool HT16K33::displayOn()
 {
 	bool status = true;
+
+	displayOnOff = ALPHA_DISPLAY_ON;
+
 	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
 	{
 		if (singleDisplayOn(i) == false)
 			status = false;
 	}
-	onState = 1;
-	return status;
-}
 
-bool HT16K33::singleDisplayOn(uint8_t displayNumber)
-{
-	int temp = 0;
-	uint8_t state = 0b10000001 ^ blinkRate;
-	return (writeRAM(lookUpDisplayAddress(displayNumber), state, (uint8_t *)&temp, 0));
+	return status;
 }
 
 bool HT16K33::displayOff()
 {
 	bool status = true;
+
+	displayOnOff = ALPHA_DISPLAY_OFF;
+
 	for (uint8_t i = 0; i < sizeOfDisplay / 4; i++)
 	{
 		if (singleDisplayOff(i) == false)
 			status = false;
 	}
-	onState = 0;
-	return status;
-}
 
-bool HT16K33::singleDisplayOff(uint8_t displayNumber)
-{
-	//DEBUGGING:
-	Serial.println("Turning single display off");
-	int temp = 0;
-	uint8_t state = 0b10000000 ^ blinkRate;
-	return (writeRAM(lookUpDisplayAddress(displayNumber), state, (uint8_t *)&temp, 0));
+	return status;
 }
 
 /*---------------------------- Light up functions ---------------------------------*/
