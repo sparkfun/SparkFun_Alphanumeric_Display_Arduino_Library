@@ -114,6 +114,8 @@ public:
     bool writeRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffSize);
     bool writeOne(uint8_t address, uint8_t reg);
     // bool writeRAM(uint8_t reg, uint8_t data);
+
+    void printRAM();
 };
 
 #endif

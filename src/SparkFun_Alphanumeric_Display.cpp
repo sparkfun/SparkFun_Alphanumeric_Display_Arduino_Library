@@ -70,7 +70,12 @@ bool HT16K33::begin(uint8_t addressLeft, uint8_t addressLeftCenter, uint8_t addr
 		return false;
 	}
 
-	// clear();
+	if (clear() == false) //Clear all displays
+	{
+		Serial.println("Failed clear()");
+		return false;
+	}
+
 	return true;
 }
 
@@ -205,7 +210,7 @@ uint8_t HT16K33::lookUpDisplayAddress(uint8_t displayNumber)
 bool HT16K33::clear()
 {
 	//Clear the displayRAM array
-	for (uint8_t i = 0; i < 16 * (numberOfDisplays); i++)
+	for (uint8_t i = 0; i < 16 * numberOfDisplays; i++)
 		displayRAM[i] = 0;
 
 	digitPosition = 0;
@@ -333,79 +338,77 @@ bool HT16K33::displayOff()
 
 /*---------------------------- Light up functions ---------------------------------*/
 
+//Given a segment and a digit, set the matching bit within the RAM of the Holtek RAM set
 void HT16K33::illuminateSegment(uint8_t segment, uint8_t digit)
 {
 	uint8_t com;
 	uint8_t row;
 
-	com = segment - 'A';
+	com = segment - 'A'; //Convert the segment letter back to a number
+
 	if (com > 6)
-	{
-		com = com - 7;
-	}
+		com -= 7;
 	if (segment == 'I')
 		com = 0;
 	if (segment == 'H')
 		com = 1;
 
-	row = digit;
+	row = digit % 4; //Convert digit (1 to 16) back to a relative position on a given display
 	if (segment > 'G')
 		row += 4;
 
-	//Decimal point/colon is pseudo-"fourth digit"
-	if (digit == 4)
-	{
-		row = 8;
-	}
+	// //Decimal point/colon is pseudo-"fourth digit"
+	// if (digit == 4)
+	// {
+	// 	row = 8;
+	// }
 
-	uint8_t dat;
-	uint8_t adr = com * 2;
+	uint8_t offset = digit / 4 * 16;
+	uint8_t adr = com * 2 + offset;
 
-	//Determine the address bit
+	// if (digit == 4)
+	// 	adr += numberOfDisplays * 8;
+
+	//Determine the address
 	if (row > 7)
-	{
 		adr++;
-	}
 
 	//Determine the data bit
 	if (row > 7)
-	{
 		row -= 8;
-	}
-	dat = 1 << row;
+	uint8_t dat = 1 << row;
 
-	uint8_t displayNumber;
+	Serial.print("illSeg Digit: ");
+	Serial.print(digit);
+	Serial.print("\t row: ");
+	Serial.print(row);
+	Serial.print("\t com: ");
+	Serial.print(com);
+	Serial.print("\t adr: ");
+	Serial.print(adr);
+	Serial.println();
 
-	// //what display are we trying to light up??
-	// if (digitPosition > 0 && digitPosition < 5)
-	// 	displayNumber = 0;
-	// //on second display
-	// else if (digitPosition > 4)
-	// {
-	// 	displayNumber = 1;
-	// }
-
-	// //Update displayRAM array
-	// displayRAM[16 * displayNumber + adr] = displayRAM[16 * displayNumber + adr] ^ (dat >> 16 * displayNumber);
-
-	displayRAM[adr] = displayRAM[adr] ^ dat;
+	displayRAM[adr] = displayRAM[adr] | dat;
 }
 
-void HT16K33::illuminateChar(uint16_t disp, uint8_t digit)
+//Given a binary set of segments and a digit, store this data into the RAM array
+void HT16K33::illuminateChar(uint16_t segmentsToTurnOn, uint8_t digit)
 {
-	for (int i = 0; i < 14; i++)
+	for (uint8_t i = 0; i < 14; i++) //There are 14 segments on this display
 	{
-		if ((disp >> i) & 0b1)
-		{
-			illuminateSegment('A' + i, digit);
-		}
+		if ((segmentsToTurnOn >> i) & 0b1)
+			illuminateSegment('A' + i, digit); //Convert the segment number to a letter
 	}
 }
 
-#define SFE_ALPHANUM_UNKNOWN_CHAR 89
-
+//This is the lookup table of segments for various characters
 void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 {
+	Serial.print("displayChar: 0x");
+	Serial.println(displayChar, HEX);
+	Serial.print("digit: ");
+	Serial.println(digit);
+
 	static uint16_t alphanumeric_segs[90]{
 		0b00000000000000, //' ' (space)
 
@@ -524,6 +527,10 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 		characterPosition = displayChar - '_' + 1 + 28 + 29;
 	}
 
+	//Error check
+	if (characterPosition > sizeof(alphanumeric_segs))
+		characterPosition = sizeof(alphanumeric_segs) - 1; //Unknown char
+
 	// //For DEBUGGING
 	// Serial.println(characterPosition);
 
@@ -542,6 +549,7 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 	// 	digit = 4;
 	// }
 
+	Serial.println(digit);
 	illuminateChar(alphanumeric_segs[characterPosition], digit);
 }
 
@@ -560,7 +568,7 @@ size_t HT16K33::write(uint8_t b)
 	// }
 
 	return (updateDisplay()); //Send RAM buffer over I2C bus
-} // write
+}
 
 /*
  * Write a character buffer to the display.
@@ -586,7 +594,7 @@ size_t HT16K33::write(const uint8_t *buffer, size_t size)
 	}
 	updateDisplay(); //Send RAM buffer over I2C bus
 	return n;
-} //write
+}
 
 //Write a string to the display
 size_t HT16K33::write(const char *str)
@@ -594,10 +602,12 @@ size_t HT16K33::write(const char *str)
 	if (str == NULL)
 		return 0;
 	return write((const uint8_t *)str, strlen(str));
-} //write
+}
 
 bool HT16K33::updateDisplay()
 {
+	printRAM();
+
 	bool status = true;
 	for (uint8_t i = 0; i < numberOfDisplays; i++)
 	{
@@ -610,6 +620,21 @@ bool HT16K33::updateDisplay()
 	}
 
 	return status;
+}
+
+void HT16K33::printRAM()
+{
+	Serial.print("DisplayRAM: ");
+	for (int x = 0; x < 16 * numberOfDisplays; x++)
+	{
+		if (x % 8 == 0)
+			Serial.println();
+
+		if (displayRAM[x] < 0x10)
+			Serial.print("0");
+		Serial.print(displayRAM[x], HEX);
+	}
+	Serial.println();
 }
 
 /*----------------------- Internal I2C Abstraction -----------------------------*/
@@ -650,15 +675,16 @@ bool HT16K33::writeRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buff
 	_i2cPort->beginTransmission(address);
 	_i2cPort->write(reg);
 
+	Serial.print("Address: 0x");
+	Serial.println(address, HEX);
+
 	for (uint8_t i = 0; i < buffSize; i++)
 	{
 		_i2cPort->write(buff[i]);
 	}
 
 	if (_i2cPort->endTransmission() == 0)
-	{
 		return true;
-	}
 
 	return false;
 }
