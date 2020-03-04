@@ -196,6 +196,8 @@ uint8_t HT16K33::lookUpDisplayAddress(uint8_t displayNumber)
 		return _deviceAddressRight;
 		break;
 	}
+
+	return 0; //We shouldn't get here
 }
 
 /*-------------------------- Display configuration functions ---------------------------*/
@@ -206,9 +208,9 @@ bool HT16K33::clear()
 	for (uint8_t i = 0; i < 16 * (numberOfDisplays); i++)
 		displayRAM[i] = 0;
 
-	updateDisplay();
-
 	digitPosition = 0;
+
+	return (updateDisplay());
 }
 
 //Duty valid between 1 and 16
@@ -557,7 +559,7 @@ size_t HT16K33::write(uint8_t b)
 	digitPosition %= (numberOfDisplays * 4); //Convert displays to number of digits
 	// }
 
-	updateDisplay(); //Send RAM buffer over I2C bus
+	return (updateDisplay()); //Send RAM buffer over I2C bus
 } // write
 
 /*

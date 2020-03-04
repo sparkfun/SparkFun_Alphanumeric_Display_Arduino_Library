@@ -34,20 +34,20 @@ typedef enum
     ALPHA_BLINK_RATE_2HZ = 0b01,
     ALPHA_BLINK_RATE_1HZ = 0b10,
     ALPHA_BLINK_RATE_0_5HZ = 0b11,
-};
+} alpha_blink_rate_t;
 
 typedef enum
 {
     ALPHA_DISPLAY_ON = 0b1,
     ALPHA_DISPLAY_OFF = 0b0,
-};
+} alpha_display_t;
 
 typedef enum
 {
     ALPHA_CMD_SYSTEM_SETUP = 0b00100000,
     ALPHA_CMD_DISPLAY_SETUP = 0b10000000,
     ALPHA_CMD_DIMMING_SETUP = 0b11100000,
-};
+} alpha_command_t;
 
 // class HT16K33
 class HT16K33 : public Print
