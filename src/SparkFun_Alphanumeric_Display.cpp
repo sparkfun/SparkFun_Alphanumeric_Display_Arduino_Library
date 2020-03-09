@@ -79,6 +79,8 @@ bool HT16K33::begin(uint8_t addressLeft, uint8_t addressLeftCenter, uint8_t addr
 		return false;
 	}
 
+	displayContent[4 * 4] = '\0'; //Terminate the array because we are doing direct prints
+
 	return true;
 }
 
@@ -106,7 +108,6 @@ bool HT16K33::isConnected(uint8_t displayNumber)
 
 		delay(1);
 	}
-
 	return false;
 }
 
@@ -623,15 +624,13 @@ bool HT16K33::updateDisplay()
 //Shift the display content to the right one digit
 bool HT16K33::shiftRight(uint8_t shiftAmt)
 {
-	for (int x = (4 * numberOfDisplays) - shiftAmt; x > 0; x--)
+	for (uint8_t x = (4 * numberOfDisplays) - shiftAmt; x >= shiftAmt; x--)
 	{
-		if (x - shiftAmt < 0)
-			break; //Error check
 		displayContent[x] = displayContent[x - shiftAmt];
 	}
 
 	//Clear the leading characters
-	for (int x = 0; x < shiftAmt; x++)
+	for (uint8_t x = 0; x < shiftAmt; x++)
 	{
 		if (x + shiftAmt > (4 * numberOfDisplays))
 			break; //Error check
@@ -709,7 +708,7 @@ bool HT16K33::writeRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buff
 		displayNum = 2;
 	else if (address == _deviceAddressRight)
 		displayNum = 3;
-	isConnected(displayNum); //Wait until display is ready
+	//isConnected(displayNum); //Wait until display is ready
 
 	_i2cPort->beginTransmission(address);
 	_i2cPort->write(reg);

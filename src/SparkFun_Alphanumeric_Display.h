@@ -66,7 +66,7 @@ private:
 
     //Enough RAM for up to 4 displays on same I2C bus
     uint8_t displayRAM[16 * 4];
-    char displayContent[4 * 4] = "";
+    char displayContent[4 * 4 + 1] = "";
 
 public:
     //Device status
