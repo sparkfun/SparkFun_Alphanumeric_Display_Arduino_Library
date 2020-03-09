@@ -43,17 +43,13 @@ bool HT16K33::begin(uint8_t addressLeft, uint8_t addressLeftCenter, uint8_t addr
 
 	//TODO: malloc more displayRAM
 
-	Serial.print("numberOfDisplays: ");
-	Serial.println(numberOfDisplays);
-
 	_i2cPort = &wirePort; //Remember the user's setting
 
 	for (uint8_t i = 0; i < numberOfDisplays; i++)
 	{
 		if (isConnected(i) == false)
 		{
-			Serial.print("Failed isConnected() on displayNumber: ");
-			Serial.println(i);
+			Serial.println("Failed isConnected()");
 			return false;
 		}
 		// if (checkDeviceID(i) == false)
@@ -63,31 +59,60 @@ bool HT16K33::begin(uint8_t addressLeft, uint8_t addressLeftCenter, uint8_t addr
 		// 	return false;
 		// }
 	}
+	Serial.println("IsConnected complete");
 
 	if (initialize() == false)
 	{
 		Serial.println("Failed initialize()");
 		return false;
 	}
+	Serial.println("Init complete");
 
 	if (clear() == false) //Clear all displays
 	{
 		Serial.println("Failed clear()");
 		return false;
 	}
+	Serial.println("Clear complete");
 
 	return true;
 }
 
-//The repeated start condition seems to help the display at address 0x71.
+//Check that all displays are responding
+//The Holtek IC sometimes fails to respond. Trying multiple times seems to work.
 bool HT16K33::isConnected(uint8_t displayNumber)
 {
-	_i2cPort->beginTransmission(lookUpDisplayAddress(displayNumber));
-	_i2cPort->endTransmission();
+	uint8_t triesBeforeGiveup = 20;
 
-	_i2cPort->beginTransmission(lookUpDisplayAddress(displayNumber));
-	if (_i2cPort->endTransmission() == 0)
-		return true;
+	// Serial.print("Attempting connect to: 0x");
+	// Serial.print(lookUpDisplayAddress(displayNumber), HEX);
+	// Serial.print(" / ");
+	// Serial.print(displayNumber);
+	// Serial.println();
+
+	uint8_t x;
+	for (x = 0; x < triesBeforeGiveup; x++)
+	{
+		_i2cPort->beginTransmission(lookUpDisplayAddress(displayNumber));
+		_i2cPort->endTransmission();
+
+		_i2cPort->beginTransmission(lookUpDisplayAddress(displayNumber));
+		if (_i2cPort->endTransmission() == 0)
+		{
+			if (x > 0)
+			{
+				Serial.print("isConnect successful");
+				Serial.print(" after ");
+				Serial.print(x);
+				Serial.print(" tries");
+				Serial.println();
+			}
+			return true;
+		}
+
+		delay(1);
+	}
+
 	return false;
 }
 
@@ -96,30 +121,34 @@ bool HT16K33::initialize()
 	//Turn on system clock of all displays
 	if (enableSystemClock() == false)
 	{
-		Serial.println("I've failed enableSystemClock()");
+		Serial.println("Init: Failed enableSystemClock()");
 		return false;
 	}
+	Serial.println("Sys clock complete");
 
 	//Set brightness of all displays to full brightness
 	if (setBrightness(16) == false)
 	{
-		Serial.println("I've failed setBrightness()");
+		Serial.println("Init: Failed setBrightness()");
 		return false;
 	}
+	Serial.println("set Brightness complete");
 
 	//Blinking set - blinking off
 	if (setBlinkRate(ALPHA_BLINK_RATE_NOBLINK) == false)
 	{
-		Serial.println("I've failed setBlinkRate()");
+		Serial.println("Init: Failed setBlinkRate()");
 		return false;
 	}
+	Serial.println("set Blinkrate complete");
 
 	//Turn on all displays
 	if (displayOn() == false)
 	{
-		Serial.println("Failed display on");
+		Serial.println("Init: Failed display on");
 		return false;
 	}
+	Serial.println("set display on complete");
 
 	return true;
 }
@@ -173,7 +202,9 @@ bool HT16K33::enableSystemClockSingle(uint8_t displayNumber)
 	uint8_t dataToWrite = ALPHA_CMD_SYSTEM_SETUP | 1; //Enable system clock
 
 	uint8_t temp = 0;
-	return (writeRAM(lookUpDisplayAddress(displayNumber), dataToWrite, (uint8_t *)&temp, 0));
+	bool status = writeRAM(lookUpDisplayAddress(displayNumber), dataToWrite, (uint8_t *)&temp, 0);
+	delay(1); //Allow display to start
+	return (status);
 }
 
 bool HT16K33::disableSystemClockSingle(uint8_t displayNumber)
@@ -195,9 +226,11 @@ uint8_t HT16K33::lookUpDisplayAddress(uint8_t displayNumber)
 		return _deviceAddressLeftCenter;
 		break;
 	case 2:
+		Serial.println("Right Center");
 		return _deviceAddressRightCenter;
 		break;
 	case 3:
+		Serial.println("Right");
 		return _deviceAddressRight;
 		break;
 	}
@@ -378,15 +411,18 @@ void HT16K33::illuminateSegment(uint8_t segment, uint8_t digit)
 		row -= 8;
 	uint8_t dat = 1 << row;
 
-	Serial.print("illSeg Digit: ");
-	Serial.print(digit);
-	Serial.print("\t row: ");
-	Serial.print(row);
-	Serial.print("\t com: ");
-	Serial.print(com);
-	Serial.print("\t adr: ");
-	Serial.print(adr);
-	Serial.println();
+	//Temp DEBUGGING - clear segments that might affect A0/A1
+	//dat &= 0b11111100;
+
+	// Serial.print("illSeg Digit: ");
+	// Serial.print(digit);
+	// Serial.print("\t row: ");
+	// Serial.print(row);
+	// Serial.print("\t com: ");
+	// Serial.print(com);
+	// Serial.print("\t adr: ");
+	// Serial.print(adr);
+	// Serial.println();
 
 	displayRAM[adr] = displayRAM[adr] | dat;
 }
@@ -404,10 +440,8 @@ void HT16K33::illuminateChar(uint16_t segmentsToTurnOn, uint8_t digit)
 //This is the lookup table of segments for various characters
 void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 {
-	Serial.print("displayChar: 0x");
-	Serial.println(displayChar, HEX);
-	Serial.print("digit: ");
-	Serial.println(digit);
+	// Serial.print("\ndisplayChar: 0x");
+	// Serial.println(displayChar, HEX);
 
 	static uint16_t alphanumeric_segs[90]{
 		0b00000000000000, //' ' (space)
@@ -549,7 +583,6 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 	// 	digit = 4;
 	// }
 
-	Serial.println(digit);
 	illuminateChar(alphanumeric_segs[characterPosition], digit);
 }
 
@@ -579,6 +612,12 @@ size_t HT16K33::write(const uint8_t *buffer, size_t size)
 	size_t n = size;
 	uint8_t buff;
 
+	//Clear the displayRAM array
+	for (uint8_t i = 0; i < 16 * numberOfDisplays; i++)
+		displayRAM[i] = 0;
+
+	digitPosition = 0;
+
 	while (size--)
 	{
 		buff = *buffer++;
@@ -588,7 +627,10 @@ size_t HT16K33::write(const uint8_t *buffer, size_t size)
 		// 	printChar(':', 1);
 		// else
 		// {
-		printChar(buff, digitPosition++);
+		printChar(buff, digitPosition);
+		displayContent[digitPosition] = buff; //Record to internal array
+
+		digitPosition++;
 		digitPosition %= (numberOfDisplays * 4);
 		// }
 	}
@@ -606,12 +648,27 @@ size_t HT16K33::write(const char *str)
 
 bool HT16K33::updateDisplay()
 {
-	printRAM();
+	//printRAM();
 
 	bool status = true;
+
+	// if (writeRAM(0x70, 0, (uint8_t *)displayRAM, 16) == false)
+	// {
+	// 	Serial.println("Fail 0x70");
+	// 	status = false;
+	// }
+	// if (writeRAM(0x73, 0, (uint8_t *)(displayRAM + 16), 16) == false)
+	// {
+	// 	Serial.println("Fail 0x73");
+	// 	status = false;
+	// }
+
+	// displayOn();
+	// return (status);
+
 	for (uint8_t i = 0; i < numberOfDisplays; i++)
 	{
-		if (writeRAM(lookUpDisplayAddress(i), 0, (uint8_t *)displayRAM + (i * 16), 16) == false)
+		if (writeRAM(lookUpDisplayAddress(i), 0, (uint8_t *)(displayRAM + (i * 16)), 16) == false)
 		{
 			Serial.print("updateDisplay fail at display 0x");
 			Serial.println(lookUpDisplayAddress(i), HEX);
@@ -619,6 +676,7 @@ bool HT16K33::updateDisplay()
 		}
 	}
 
+	//displayOn();
 	return status;
 }
 
@@ -633,16 +691,61 @@ void HT16K33::printRAM()
 		if (displayRAM[x] < 0x10)
 			Serial.print("0");
 		Serial.print(displayRAM[x], HEX);
+		Serial.print(" ");
 	}
 	Serial.println();
+}
+
+//Shift the display content to the right one digit
+bool HT16K33::shiftRight(uint8_t shiftAmt)
+{
+	for (int x = (4 * numberOfDisplays) - shiftAmt; x > 0; x--)
+	{
+		if (x - shiftAmt < 0)
+			break; //Error check
+		displayContent[x] = displayContent[x - shiftAmt];
+	}
+
+	//Clear the leading characters
+	for (int x = 0; x < shiftAmt; x++)
+	{
+		if (x + shiftAmt > (4 * numberOfDisplays))
+			break; //Error check
+
+		displayContent[0 + x] = ' ';
+	}
+
+	return (print(displayContent));
+}
+
+//Shift the display content to the left one digit
+bool HT16K33::shiftLeft(uint8_t shiftAmt)
+{
+	for (int x = 0; x < 4 * numberOfDisplays; x++)
+	{
+		if (x + shiftAmt > (4 * numberOfDisplays))
+			break; //Error check
+		displayContent[x] = displayContent[x + shiftAmt];
+	}
+
+	//Clear the trailing characters
+	for (int x = 0; x < shiftAmt; x++)
+	{
+		if (4 * numberOfDisplays - 1 - x < 0)
+			break; //Error check
+
+		displayContent[4 * numberOfDisplays - 1 - x] = ' ';
+	}
+
+	return (print(displayContent));
 }
 
 /*----------------------- Internal I2C Abstraction -----------------------------*/
 
 bool HT16K33::readRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffSize)
 {
-	_i2cPort->beginTransmission(address);
-	_i2cPort->endTransmission();
+	// _i2cPort->beginTransmission(address);
+	// _i2cPort->endTransmission();
 
 	_i2cPort->beginTransmission(address);
 	_i2cPort->write(reg);
@@ -651,9 +754,7 @@ bool HT16K33::readRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffS
 	if (_i2cPort->requestFrom(address, buffSize) > 0)
 	{
 		for (uint8_t i = 0; i < buffSize; i++)
-		{
 			buff[i] = _i2cPort->read();
-		}
 		return true;
 	}
 
@@ -667,21 +768,24 @@ bool HT16K33::readRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffS
 // 	return (read(reg, (uint8_t *)&data, (uint8_t)sizeof(data)));
 // }
 
+//Write the contents of the RAM array out to the Holtek IC
+//After much testing, it
 bool HT16K33::writeRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffSize)
 {
-	_i2cPort->beginTransmission(address);
-	_i2cPort->endTransmission(false);
+	uint8_t displayNum = 0;
+	if (address == _deviceAddressLeftCenter)
+		displayNum = 1;
+	else if (address == _deviceAddressRightCenter)
+		displayNum = 2;
+	else if (address == _deviceAddressRight)
+		displayNum = 3;
+	isConnected(displayNum); //Wait until display is ready
 
 	_i2cPort->beginTransmission(address);
 	_i2cPort->write(reg);
 
-	Serial.print("Address: 0x");
-	Serial.println(address, HEX);
-
 	for (uint8_t i = 0; i < buffSize; i++)
-	{
 		_i2cPort->write(buff[i]);
-	}
 
 	if (_i2cPort->endTransmission() == 0)
 		return true;
@@ -691,8 +795,8 @@ bool HT16K33::writeRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buff
 
 bool HT16K33::writeOne(uint8_t address, uint8_t reg)
 {
-	_i2cPort->beginTransmission(address);
-	_i2cPort->endTransmission(false);
+	// _i2cPort->beginTransmission(address);
+	// _i2cPort->endTransmission(false);
 
 	_i2cPort->beginTransmission(address);
 	_i2cPort->write(reg);

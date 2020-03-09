@@ -65,6 +65,7 @@ private:
 
     //Enough RAM for up to 4 displays on same I2C bus
     uint8_t displayRAM[16 * 4];
+    char displayContent[4 * 4] = "";
 
 public:
     //Device status
@@ -102,6 +103,9 @@ public:
     void illuminateChar(uint16_t disp, uint8_t digit);
     void printChar(uint8_t displayChar, uint8_t digit);
     bool updateDisplay();
+
+    bool shiftRight(uint8_t shiftAmt = 1);
+    bool shiftLeft(uint8_t shiftAmt = 1);
 
     // For print
     virtual size_t write(uint8_t);
