@@ -1,9 +1,11 @@
 /******************************************************************************
 SparkFun_Alphanumeric_Display.h
 SparkFun Alphanumeric Display Library Header File
-Madison Chodikov @ SparkFun Electronics
+Priyanka Makin @ SparkFun Electronics
 Original Creation Date: July 25, 2019
-****ENTER PRODUCT PAGE URL HERE****
+https://github.com/sparkfun/SparkFun_Alphanumeric_Display_Arduino_Library
+
+Pickup a board here: https://sparkle.sparkfun.com/sparkle/storefront_products/16391
 
 This file prototypes the HT16K33 class, implemented in SparkFun_Alphanumeric_Display.cpp.
 
@@ -20,9 +22,8 @@ Distributed as-is; no warranty is given.
 #ifndef __SparkFun_Alphanumeric_Display_H__
 #define __SparkFun_Alphanumeric_Display_H__
 
-#include <Wire.h>
 #include <Arduino.h>
-#include <Stream.h>
+#include <Wire.h>
 
 #define DEFAULT_ADDRESS 0x70 //Default I2C address when A0, A1 are floating
 #define DEV_ID 0x12          //Device ID that I just made up
@@ -116,10 +117,7 @@ public:
     bool readRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffSize);
     // bool read(uint8_t reg, uint8_t data);
     bool writeRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffSize);
-    bool writeOne(uint8_t address, uint8_t reg);
-    // bool writeRAM(uint8_t reg, uint8_t data);
-
-    void printRAM();
+    bool writeRAM(uint8_t reg, uint8_t data);
 };
 
 #endif
