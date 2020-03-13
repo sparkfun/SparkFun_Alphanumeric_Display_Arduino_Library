@@ -31,8 +31,7 @@ void setup()
   if (display.begin() == false)
   {
     Serial.println("Device did not acknowledge! Freezing.");
-    while (1)
-      ;
+    while (1);
   }
   Serial.println("Display acknowledged.");
 

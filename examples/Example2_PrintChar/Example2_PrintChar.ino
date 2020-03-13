@@ -33,13 +33,12 @@ void setup()
   }
   Serial.println("Display acknowledged.");
 
-  display.initialize();
-  display.clearDisplay();
+  display.printChar('W', 0);
+  display.printChar('H', 1);
+  display.printChar('A', 2);
+  display.printChar('T', 3);
 
-  display.printChar('W', 1);
-  display.printChar('H', 2);
-  display.printChar('A', 3);
-  display.printChar('T', 4);
+  display.updateDisplay();
 }
 
 void loop(){

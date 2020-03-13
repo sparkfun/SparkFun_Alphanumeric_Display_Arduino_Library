@@ -28,54 +28,18 @@ void setup() {
   Wire.begin(); //Join I2C bus
 
   //check if displays will acknowledge
-//  if (display.begin(0x70, 0x71) == false)
-  if (display.begin(0x71) == false)
-//  if (display.begin(0x70) == false)
+  if (display.begin(0x70, 0x71) == false)
   {
     Serial.println("Device did not acknowledge! Freezing.");
     while(1);
   }
   Serial.println("Displays acknowledged.");
 
-  while(1);
-
-//  display.print("Hello Wo");
-//  delay(500);
-//  while(1);
-//  display.clearDisplay();
-//  display.print("ello Wor");
-//  delay(500);
-//  display.clearDisplay();
-//  display.print("llo Worl");
-//  delay(500);
-//  display.clearDisplay();
-//  display.print("lo World");
-//  delay(500);
-//  display.clearDisplay();
-//  display.print("o World");
-//  delay(500);
-//  display.clearDisplay();
-//  display.print(" World");
-//  delay(500);
-//  display.clearDisplay();
-//  display.print("World");
-//  delay(500);
-//  display.clearDisplay();
-//  display.print("orld");
-//  delay(500);
-//  display.clearDisplay();
-//  display.print("rld");
-//  delay(500);
-//  display.clearDisplay();
-//  display.print("ld");
-//  delay(500);
-//  display.clearDisplay();
-//  display.print("d");
-//  delay(500);
-//  display.clearDisplay();
-//  display.print("");
+  display.print("GET MILK");
 }
 
-void loop() {
-  
+void loop() 
+{  
+  delay(200);
+  display.shiftLeft();
 }

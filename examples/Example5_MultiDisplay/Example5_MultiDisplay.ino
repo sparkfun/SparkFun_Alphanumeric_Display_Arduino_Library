@@ -35,12 +35,9 @@ void setup() {
   }
   Serial.println("Displays acknowledged.");
 
-//  display.print("Hello! W");
-  display.print("12:3.456:7.8");
-  //TEST unknown characters
-//  display.print("!!!!!!!!");
+  display.print("Get Milk");
 }
 
-void loop() {
-  
+void loop() 
+{
 }

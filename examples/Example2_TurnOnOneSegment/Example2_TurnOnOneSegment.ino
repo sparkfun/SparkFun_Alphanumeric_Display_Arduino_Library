@@ -1,4 +1,3 @@
-//THIS EXAMPLE IS NO LONGER RELEVANT
 /*******************************************************************************************
  * This example tests illuminating individual segments of the display. Pass in the segment
  * and digit you wish to illuminate to illuminateSegement().
@@ -35,12 +34,11 @@ void setup()
   }
   Serial.println("Display acknowledged.");
 
-//  display.initialize();
-//  display.clearDisplay();
-  display.illuminateSegment('A', 1);
-  display.illuminateSegment('L', 3);
+  display.illuminateSegment('A', 0);
+  display.illuminateSegment('L', 1);
   display.illuminateSegment('I', 2);
-  display.illuminateSegment('G', 4);
+  display.illuminateSegment('G', 3);
+  display.updateDisplay();
 }
 
 void loop()

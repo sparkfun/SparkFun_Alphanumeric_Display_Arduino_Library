@@ -45,6 +45,18 @@ typedef enum
 
 typedef enum
 {
+    ALPHA_DECIMAL_ON = 0b1,
+    ALPHA_DECIMAL_OFF = 0b0,
+} alpha_decimal_t;
+
+typedef enum
+{
+    ALPHA_COLON_ON = 0b1,
+    ALPHA_COLON_OFF = 0b0,
+} alpha_colon_t;
+
+typedef enum
+{
     ALPHA_CMD_SYSTEM_SETUP = 0b00100000,
     ALPHA_CMD_DISPLAY_SETUP = 0b10000000,
     ALPHA_CMD_DIMMING_SETUP = 0b11100000,
@@ -61,7 +73,9 @@ private:
     uint8_t _deviceAddressRight;
     uint8_t digitPosition = 0;
     uint8_t numberOfDisplays = 1;
-    bool displayOnOff = 0;                        //Tracks display on/off bit of display setup register
+    bool displayOnOff = 0; //Tracks display on/off bit of display setup register
+    bool decimalOnOff = 0;
+    bool colonOnOff = 0;
     uint8_t blinkRate = ALPHA_BLINK_RATE_NOBLINK; //Tracks blink bits in display setup register
 
     //Enough RAM for up to 4 displays on same I2C bus
@@ -104,6 +118,14 @@ public:
     void illuminateChar(uint16_t disp, uint8_t digit);
     void printChar(uint8_t displayChar, uint8_t digit);
     bool updateDisplay();
+
+    //Colon and decimal
+    bool decimalOnSingle(uint8_t displayNumber);
+    bool decimalOffSingle(uint8_t displayNumber);
+    bool setDecimalOnOff(uint8_t displayNumber, bool turnOnDecimal);
+    bool colonOnSingle(uint8_t displayNumber);
+    bool colonOffSingle(uint8_t displayNumber);
+    bool setColonOnOff(uint8_t displayNumber, bool turnOnColon);
 
     bool shiftRight(uint8_t shiftAmt = 1);
     bool shiftLeft(uint8_t shiftAmt = 1);

@@ -318,6 +318,52 @@ bool HT16K33::setDisplayOnOff(uint8_t displayNumber, bool turnOnDisplay)
 	return (writeRAM(lookUpDisplayAddress(displayNumber), dataToWrite));
 }
 
+bool HT16K33::decimalOnSingle(uint8_t displayNumber)
+{
+	return setDecimalOnOff(displayNumber, true);
+}
+
+bool HT16K33::decimalOffSingle(uint8_t displayNumber)
+{
+	return setDecimalOnOff(displayNumber, false);
+}
+
+bool HT16K33::setDecimalOnOff(uint8_t displayNumber, bool turnOnDecimal)
+{
+	uint8_t adr = 0x03;
+	uint8_t dat = 0x01;
+
+	if (turnOnDecimal == true)
+		decimalOnOff = ALPHA_DECIMAL_ON;
+	else
+		decimalOnOff = ALPHA_DECIMAL_OFF;
+
+	displayRAM[adr] = displayRAM[adr] | dat;
+}
+
+bool HT16K33::colonOnSingle(uint8_t displayNumber)
+{
+	return setColonOnOff(displayNumber, true);
+}
+
+bool HT16K33::colonOffSingle(uint8_t displayNumber)
+{
+	return setColonOnOff(displayNumber, false);
+}
+
+bool HT16K33::setColonOnOff(uint8_t displayNumber, bool turnOnColon)
+{
+	uint8_t adr = 0x01;
+	uint8_t dat = 0x01;
+
+	if (turnOnColon = true)
+		colonOnOff = ALPHA_COLON_ON;
+	else
+		colonOnOff = ALPHA_COLON_OFF;
+
+	displayRAM[adr] = displayRAM[adr] | dat;
+}
+
 //Turn on/off the entire display
 bool HT16K33::displayOn()
 {
@@ -408,11 +454,11 @@ void HT16K33::illuminateChar(uint16_t segmentsToTurnOn, uint8_t digit)
 	}
 }
 
+#define SFE_ALPHANUM_UNKNOWN_CHAR 89
+
 //This is the lookup table of segments for various characters
 void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 {
-	// Serial.print("\ndisplayChar: 0x");
-	// Serial.println(displayChar, HEX);
 
 	static uint16_t alphanumeric_segs[90]{
 		0b00000000000000, //' ' (space)
@@ -532,9 +578,17 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 		characterPosition = displayChar - '_' + 1 + 28 + 29;
 	}
 
-	//Error check
-	if (characterPosition > sizeof(alphanumeric_segs))
-		characterPosition = sizeof(alphanumeric_segs) - 1; //Unknown char
+	//Take care of special characters
+	if (characterPosition == 12) //'.'
+		decimalOnSingle(0);
+	if (characterPosition == 24) //':'
+		colonOnSingle(0);
+	if (characterPosition == 65532) //unknown character
+		characterPosition = SFE_ALPHANUM_UNKNOWN_CHAR;
+
+	// //Error check
+	// if (characterPosition > sizeof(alphanumeric_segs))
+	// 	characterPosition = sizeof(alphanumeric_segs) - 1; //Unknown char
 
 	illuminateChar(alphanumeric_segs[characterPosition], digit);
 }
@@ -545,13 +599,14 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
  */
 size_t HT16K33::write(uint8_t b)
 {
-	// if (b == '.' | b == ':')
-	// 	printChar(b, 1);
-	// else
-	// {
-	printChar(b, digitPosition++);
-	digitPosition %= (numberOfDisplays * 4); //Convert displays to number of digits
-	// }
+	//If user wants to print '.' or ':', don't increment the digitPosition!
+	if (b == '.' | b == ':')
+		printChar(b, 0);
+	else
+	{
+		printChar(b, digitPosition++);
+		digitPosition %= (numberOfDisplays * 4); //Convert displays to number of digits
+	}
 
 	return (updateDisplay()); //Send RAM buffer over I2C bus
 }
@@ -574,18 +629,19 @@ size_t HT16K33::write(const uint8_t *buffer, size_t size)
 	while (size--)
 	{
 		buff = *buffer++;
-		// if (buff == '.')
-		// 	printChar('.', 1);
-		// else if (buff == ':')
-		// 	printChar(':', 1);
-		// else
-		// {
-		printChar(buff, digitPosition);
-		displayContent[digitPosition] = buff; //Record to internal array
+		//For special characters like '.' or ':', do not increment the digitPosition
+		if (buff == '.')
+			printChar('.', 0);
+		else if (buff == ':')
+			printChar(':', 0);
+		else
+		{
+			printChar(buff, digitPosition);
+			displayContent[digitPosition] = buff; //Record to internal array
 
-		digitPosition++;
-		digitPosition %= (numberOfDisplays * 4);
-		// }
+			digitPosition++;
+			digitPosition %= (numberOfDisplays * 4);
+		}
 	}
 
 	updateDisplay(); //Send RAM buffer over I2C bus
