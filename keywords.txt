@@ -1,11 +1,56 @@
-#################################################################
-# Syntax Coloring Map for SparkFun Alphanumeric Display Library #
-#################################################################
-# Class
-#################################################################
-	KEYWORD1
+==================================
+CLASS
+==================================
+HT16K33	KEYWORD1
 
-#################################################################
-# Methods and Functions
-#################################################################
-	KEYWORD2
+==================================
+FUNCTIONS
+==================================
+begin	KEYWORD2
+isConnected	KEYWORD2
+initialize	KEYWORD2
+checkDeviceID	KEYWORD2
+lookUpDisplayAddress	KEYWORD2
+clear	KEYWORD2
+setBrightness	KEYWORD2
+setBrightnessSingle	KEYWORD2
+setBlinkRate	KEYWORD2
+setBlinkRateSingle	KEYWORD2
+displayOn	KEYWORD2
+displayOff	KEYWORD2
+displayOnSingle	KEYWORD2
+displayOffSingle	KEYWORD2
+setDisplayOnOff	KEYWORD2
+enableSystemClock	KEYWORD2
+disableSystemClock	KEYWORD2
+enableSystemClockSingle	KEYWORD2
+disableSystemclockSingle	KEYWORD2
+illuminateSegment	KEYWORD2
+illuminateChar	KEYWORD2
+printChar	KEYWORD2
+updateDispplay	KEYWORD2
+decimalOnSingle	KEYWORD2
+decimalOffSingle	KEYWORD2
+setDecimalOnOff	KEYWORD2
+colonOnSingle	KEYWORD2
+colonOffSingle	KEYWORD2
+setColonOnOff	KEYWORD2
+shiftRight	KEYWORD2
+shiftLeft	KEYWORD2
+write	KEYWORD2
+write	KEYWORD2
+write	KEYWORD2
+readRAM	KEYWORD2
+writeRAM	KEYWORD2
+writeRAM	KEYWORD2
+
+==================================
+CONSTANTS
+==================================
+DEFAULT_ADDRESS	LITERAL1
+DEV_ID	LITERAL1
+DEFAULT_NOTHING_ATTACHED	LITERAL1
+
+==================================
+DATA TYPES
+==================================
