@@ -318,6 +318,37 @@ bool HT16K33::setDisplayOnOff(uint8_t displayNumber, bool turnOnDisplay)
 	return (writeRAM(lookUpDisplayAddress(displayNumber), dataToWrite));
 }
 
+//Turn on/off the entire display
+bool HT16K33::displayOn()
+{
+	bool status = true;
+
+	displayOnOff = ALPHA_DISPLAY_ON;
+
+	for (uint8_t i = 0; i < numberOfDisplays; i++)
+	{
+		if (displayOnSingle(i) == false)
+			status = false;
+	}
+
+	return status;
+}
+
+bool HT16K33::displayOff()
+{
+	bool status = true;
+
+	displayOnOff = ALPHA_DISPLAY_OFF;
+
+	for (uint8_t i = 0; i < numberOfDisplays; i++)
+	{
+		if (displayOffSingle(i) == false)
+			status = false;
+	}
+
+	return status;
+}
+
 bool HT16K33::decimalOnSingle(uint8_t displayNumber)
 {
 	return setDecimalOnOff(displayNumber, true);
@@ -343,8 +374,8 @@ bool HT16K33::setDecimalOnOff(uint8_t displayNumber, bool turnOnDecimal)
 		decimalOnOff = ALPHA_DECIMAL_OFF;
 		dat = 0x00;
 	}
-	//DEBUG: this does not work for multiple displays yet!
-	displayRAM[adr + displayNumber * 16] = displayRAM[adr] | dat;
+
+	displayRAM[adr + displayNumber * 16] = displayRAM[adr + displayNumber * 16] | dat;
 	updateDisplay();
 }
 
@@ -392,44 +423,48 @@ bool HT16K33::colonOffSingle(uint8_t displayNumber)
 bool HT16K33::setColonOnOff(uint8_t displayNumber, bool turnOnColon)
 {
 	uint8_t adr = 0x01;
-	uint8_t dat = 0x01;
+	uint8_t dat;
 
-	if (turnOnColon = true)
+	if (turnOnColon == true)
+	{
 		colonOnOff = ALPHA_COLON_ON;
+		dat = 0x01;
+	}
 	else
+	{
 		colonOnOff = ALPHA_COLON_OFF;
+		dat = 0x00;
+	}
 
-	displayRAM[adr] = displayRAM[adr] | dat;
+	displayRAM[adr + displayNumber * 16] = displayRAM[adr + displayNumber * 16] | dat;
+	updateDisplay();
 }
 
-//Turn on/off the entire display
-bool HT16K33::displayOn()
+bool HT16K33::colonOn()
 {
 	bool status = true;
 
-	displayOnOff = ALPHA_DISPLAY_ON;
+	colonOnOff = ALPHA_COLON_ON;
 
 	for (uint8_t i = 0; i < numberOfDisplays; i++)
 	{
-		if (displayOnSingle(i) == false)
+		if (colonOnSingle(i) == false)
 			status = false;
 	}
-
 	return status;
 }
 
-bool HT16K33::displayOff()
+bool HT16K33::colonOff()
 {
 	bool status = true;
-
-	displayOnOff = ALPHA_DISPLAY_OFF;
+	
+	colonOnOff = ALPHA_COLON_OFF;
 
 	for (uint8_t i = 0; i < numberOfDisplays; i++)
 	{
-		if (displayOffSingle(i) == false)
+		if (colonOffSingle(i) == false)
 			status = false;
 	}
-
 	return status;
 }
 
@@ -616,11 +651,12 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 		characterPosition = displayChar - '_' + 1 + 28 + 29;
 	}
 
+	uint8_t dispNum = digitPosition / 4;
 	//Take care of special characters
 	if (characterPosition == 12) //'.'
-		decimalOnSingle(0);
+		decimalOnSingle(dispNum);
 	if (characterPosition == 24) //':'
-		colonOnSingle(0);
+		colonOnSingle(dispNum);
 	if (characterPosition == 65532) //unknown character
 		characterPosition = SFE_ALPHANUM_UNKNOWN_CHAR;
 

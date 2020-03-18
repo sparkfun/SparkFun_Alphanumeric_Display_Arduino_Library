@@ -125,6 +125,9 @@ public:
     bool decimalOnSingle(uint8_t displayNumber);
     bool decimalOffSingle(uint8_t displayNumber);
     bool setDecimalOnOff(uint8_t displayNumber, bool turnOnDecimal);
+
+    bool colonOn();
+    bool colonOff();
     bool colonOnSingle(uint8_t displayNumber);
     bool colonOffSingle(uint8_t displayNumber);
     bool setColonOnOff(uint8_t displayNumber, bool turnOnColon);

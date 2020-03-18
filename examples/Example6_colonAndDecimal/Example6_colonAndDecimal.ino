@@ -27,15 +27,23 @@ void setup(){
 
   Wire.begin();
 
-  if (display.begin(0x70, 0x71) == false)
+  if (display.begin(0x70) == false)
   {
     Serial.println("Device did not acknowledge! Freezing.");
     while(1);
   }
   Serial.println("Display acknowledged.");
 
-  display.print("12345678");
-  display.decimalOff();
+  //You can print colons and decimals
+  //NOTE: they can only go in the character position determined by the layout of the display
+  display.print("12:3.4");
+  
+//  display.decimalOn();  //Turn decimals on
+//  display.decimalOff();   //Turn decimals off
+//  display.decimalOnSingle(0); //Turn decimal on for one display
+//  display.colon();      //Turn colons on
+//  display.colonOff();     //Turn colons off
+//  display.colonOnSingle(1); //Turn colon on for one display
 }
 
 void loop()
