@@ -27,14 +27,15 @@ void setup(){
 
   Wire.begin();
 
-  if (display.begin() == false)
+  if (display.begin(0x70, 0x71) == false)
   {
     Serial.println("Device did not acknowledge! Freezing.");
     while(1);
   }
   Serial.println("Display acknowledged.");
 
-  display.print(":1234");
+  display.print("12345678");
+  display.decimalOff();
 }
 
 void loop()

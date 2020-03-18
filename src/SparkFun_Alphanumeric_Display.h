@@ -120,6 +120,8 @@ public:
     bool updateDisplay();
 
     //Colon and decimal
+    bool decimalOn();
+    bool decimalOff();
     bool decimalOnSingle(uint8_t displayNumber);
     bool decimalOffSingle(uint8_t displayNumber);
     bool setDecimalOnOff(uint8_t displayNumber, bool turnOnDecimal);

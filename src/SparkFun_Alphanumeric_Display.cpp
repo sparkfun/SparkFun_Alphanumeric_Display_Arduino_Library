@@ -331,14 +331,52 @@ bool HT16K33::decimalOffSingle(uint8_t displayNumber)
 bool HT16K33::setDecimalOnOff(uint8_t displayNumber, bool turnOnDecimal)
 {
 	uint8_t adr = 0x03;
-	uint8_t dat = 0x01;
+	uint8_t dat;
 
 	if (turnOnDecimal == true)
+	{
 		decimalOnOff = ALPHA_DECIMAL_ON;
+		dat = 0x01;
+	}
 	else
+	{
 		decimalOnOff = ALPHA_DECIMAL_OFF;
+		dat = 0x00;
+	}
+	//DEBUG: this does not work for multiple displays yet!
+	displayRAM[adr + displayNumber * 16] = displayRAM[adr] | dat;
+	updateDisplay();
+}
 
-	displayRAM[adr] = displayRAM[adr] | dat;
+//Turn on/off the entire display
+bool HT16K33::decimalOn()
+{
+	bool status = true;
+
+	decimalOnOff = ALPHA_DECIMAL_ON;
+
+	for (uint8_t i = 0; i < numberOfDisplays; i++)
+	{
+		if (decimalOnSingle(i) == false)
+			status = false;
+	}
+
+	Serial.println(status);
+	return status;
+}
+
+bool HT16K33::decimalOff()
+{
+	bool status = true;
+
+	decimalOnOff = ALPHA_DECIMAL_OFF;
+
+	for (uint8_t i = 0; i < numberOfDisplays; i++)
+	{
+		if (decimalOffSingle(i) == false)
+			status = false;
+	}
+	return status;
 }
 
 bool HT16K33::colonOnSingle(uint8_t displayNumber)
