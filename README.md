@@ -17,7 +17,7 @@ SparkFun Alphanumeric Display Library
 
 [*Qwiic Alphanumeric Display - Pink (SPX-16391)*](https://www.sparkfun.com/products/16391)
 
-The SparkFun Qwiic Alphanumeric Display is a 14-segment, 4 digit alphanumeric display with the Hotlek HT16K33 LED Driver that allows you to control every segment individually through an I2C bus. 
+The SparkFun Qwiic Alphanumeric Display is a 14-segment, 4 digit alphanumeric display with the Hotlek HT16K33 LED Driver. This library allows you to illuminate every segment individually or print full strings through I2C commands. The I2C address is configurable, so daisy-chain up to 4 displays on one bus! 
 
 SparkFun labored with love to create this code. Feel like supporting open source hardware? 
 Buy a [board]() from SparkFun!
@@ -25,7 +25,7 @@ Buy a [board]() from SparkFun!
 Repository Contents
 -------------------
 
-* **/examples** - Example code to be used in the Arduino IDE.
+* **/examples** - Example code to show how the functions work.
 * **/src** - Source files for the library (.cpp, .h).
 * **keywords.txt** - Keywords from this library that will be highlighted in the Arduino IDE.
 * **libray.properties** - General library properties for the Arduino package manager
