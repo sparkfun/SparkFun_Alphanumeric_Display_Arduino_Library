@@ -26,7 +26,7 @@ Distributed as-is; no warranty is given.
 #include <Wire.h>
 
 #define DEFAULT_ADDRESS 0x70 //Default I2C address when A0, A1 are floating
-#define DEV_ID 0x12          //Device ID that I just made up
+// #define DEV_ID 0x12          //Device ID that I just made up
 #define DEFAULT_NOTHING_ATTACHED 0xFF
 
 typedef enum
@@ -91,7 +91,7 @@ public:
                TwoWire &wirePort = Wire); // Sets the address of the device and opens the Wire port for communication
     bool isConnected(uint8_t displayNumber);
     bool initialize();
-    bool checkDeviceID(uint8_t displayNumber);
+    // bool checkDeviceID(uint8_t displayNumber);
     uint8_t lookUpDisplayAddress(uint8_t displayNumber);
 
     //Display configuration functions
