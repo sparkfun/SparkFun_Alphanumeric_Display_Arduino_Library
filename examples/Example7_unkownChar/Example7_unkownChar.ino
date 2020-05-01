@@ -3,6 +3,7 @@
  * 
  * Priyanka Makin @ SparkFun Electronics
  * Original Creation Date: March 13, 2020
+ * Updated April 30, 2020 by Gaston Williams - changed exclamation to tab character
  * 
  * SparkFun labored with love to create this code. Feel like supporting open source hardware?
  * Buy a board from SparkFun! https://www.sparkfun.com/products/16391
@@ -34,7 +35,7 @@ void setup() {
   }
   Serial.println("Display acknowledged.");
 
-  display.print("!!!!");
+  display.print("\t\t\t\t");  //tabs are not printable characters
 }
 
 void loop() 

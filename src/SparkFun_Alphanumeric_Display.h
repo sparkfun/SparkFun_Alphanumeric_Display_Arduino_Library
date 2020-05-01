@@ -5,6 +5,8 @@ Priyanka Makin @ SparkFun Electronics
 Original Creation Date: July 25, 2019
 https://github.com/sparkfun/SparkFun_Alphanumeric_Display_Arduino_Library
 
+Updated April 30, 2020 by Gaston Williams to add defineChar function
+
 Pickup a board here: https://sparkle.sparkfun.com/sparkle/storefront_products/16391
 
 This file prototypes the HT16K33 class, implemented in SparkFun_Alphanumeric_Display.cpp.
@@ -118,6 +120,9 @@ public:
     void illuminateChar(uint16_t disp, uint8_t digit);
     void printChar(uint8_t displayChar, uint8_t digit);
     bool updateDisplay();
+
+    //Define Character Segment Map
+    bool defineChar(uint8_t displayChar, uint16_t segmentsToTurnOn);
 
     //Colon and decimal
     bool decimalOn();
