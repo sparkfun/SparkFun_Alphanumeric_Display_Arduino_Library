@@ -46,12 +46,13 @@ void setup() {
   //Update a, e, f, s and z to new characters
   //This change is not permanent, and lasts only for this program.
   
-  //define 14 segment bits: nmlkjihgfedcba
+  //Define 14 segment bits: nmlkjihgfedcba
   display.defineChar('a', 0b01000001011000);                              
   display.defineChar('e', 0b10000001011000);
   display.defineChar('f', 0b01010101000000);
-  display.defineChar('s', 0b00100100001000);
-  display.defineChar('z', 0b10000001001000);
+  //Also use constants SEG_A - SEG_N to define characters
+  display.defineChar('s', SEG_L | SEG_I | SEG_D); // 0b00100100001000  
+  display.defineChar('z', SEG_N | SEG_G | SEG_D); // 0b10000001001000
 }
 
 void loop() 

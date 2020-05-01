@@ -31,6 +31,23 @@ Distributed as-is; no warranty is given.
 // #define DEV_ID 0x12          //Device ID that I just made up
 #define DEFAULT_NOTHING_ATTACHED 0xFF
 
+//Define constants for segment bits
+#define SEG_A 0x0001
+#define SEG_B 0x0002
+#define SEG_C 0x0004
+#define SEG_D 0x0008
+#define	SEG_E 0x0010
+#define SEG_F 0x0020
+#define SEG_G 0x0040
+#define SEG_H 0x0080
+#define SEG_I 0x0100
+#define SEG_J 0x0200
+#define SEG_K 0x0400
+#define SEG_L 0x0800
+#define SEG_M 0x1000
+#define SEG_N 0x2000
+
+
 typedef enum
 {
     ALPHA_BLINK_RATE_NOBLINK = 0b00,
