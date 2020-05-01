@@ -36,7 +36,7 @@ Distributed as-is; no warranty is given.
 #define SEG_B 0x0002
 #define SEG_C 0x0004
 #define SEG_D 0x0008
-#define	SEG_E 0x0010
+#define SEG_E 0x0010
 #define SEG_F 0x0020
 #define SEG_G 0x0040
 #define SEG_H 0x0080
