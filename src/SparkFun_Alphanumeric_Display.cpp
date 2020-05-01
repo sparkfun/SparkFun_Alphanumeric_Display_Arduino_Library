@@ -649,9 +649,9 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 
 	uint8_t dispNum = digitPosition / 4;
 	//Take care of special characters
-	if (characterPosition == 12) //'.'
+	if (characterPosition == 14) //'.'
 		decimalOnSingle(dispNum);
-	if (characterPosition == 24) //':'
+	if (characterPosition == 26) //':'
 		colonOnSingle(dispNum);
 	if (characterPosition == 65532) //unknown character
 		characterPosition = SFE_ALPHANUM_UNKNOWN_CHAR;
