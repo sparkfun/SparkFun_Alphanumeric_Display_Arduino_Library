@@ -3,10 +3,9 @@
  * 
  * Priyanka Makin @ SparkFun Electronics
  * Original Creation Date: March 13, 2020
- * Updated April 30, 2020 by Gaston Williams - changed exclamation to tab character
  * 
  * SparkFun labored with love to create this code. Feel like supporting open source hardware?
- * Buy a board from SparkFun! LINK GOES HERE
+ * Buy a board from SparkFun! https://www.sparkfun.com/products/16391
  * 
  * This code is Lemonadeware; if you see me (or any other SparkFun employee) at the 
  * local, and you've found our code helpful, please buy us a round!
@@ -19,7 +18,7 @@
  ****************************************************************************************/
 #include <Wire.h>
 
-#include <SparkFun_Alphanumeric_Display.h>  //Click here to get the library:
+#include <SparkFun_Alphanumeric_Display.h>  //Click here to get the library: http://librarymanager/All#Alphanumeric_Display by SparkFun
 HT16K33 display;
 
 void setup() {
@@ -35,7 +34,7 @@ void setup() {
   }
   Serial.println("Display acknowledged.");
 
-  display.print("\t\t\t\t");  //tabs are not printable characters
+  display.print("!!!!");
 }
 
 void loop() 
