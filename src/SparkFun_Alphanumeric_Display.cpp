@@ -5,7 +5,7 @@ Priyanka Makin @ SparkFun Electronics
 Original Creation Date: February 25, 2020
 https://github.com/sparkfun/SparkFun_Alphanumeric_Display_Arduino_Library
 
-Updated April 30, 2020 by Gaston Williams to add defineChar function
+Updated May 2, 2020 by Gaston Williams to add defineChar function
 
 Pickup a board here: https://sparkle.sparkfun.com/sparkle/storefront_products/16391
 
@@ -29,7 +29,112 @@ local, and you've found our code helpful, please buy us a round!
 Distributed as-is; no warranty is given.
 ******************************************************************************/
 
+#include <avr/pgmspace.h>
 #include <SparkFun_Alphanumeric_Display.h>
+
+/*--------------------------- Character Map ----------------------------------*/
+#define SFE_ALPHANUM_UNKNOWN_CHAR 95
+
+//This is the lookup table of segments for various characters
+static const uint16_t PROGMEM alphanumeric_segs[96]{
+	//nmlkjihgfedcba
+	0b00000000000000, //' ' (space)
+	0b00001000001000, //'!'  - added to map
+	0b00001000000010, //'"' - added to map
+ 	0b1001101001110,  //'#'
+	0b1001101101101,  //'$'
+	0b10010000100100, //'%'
+	0b110011011001,   //'&'
+	0b1000000000,	  //'''
+	0b111001,		  //'('
+	0b1111,			  //')'
+	0b11111010000000, //'*'
+	0b1001101000000,  //'+'
+	0b10000000000000, //','
+	0b101000000,	  //'-'
+	0b00000000000000, //'.' - changed to blank
+	0b10010000000000, //'/'
+	0b111111,		  //'0'
+	0b10000000110,	  //'1'
+	0b101011011,	  //'2'
+	0b101001111,	  //'3'
+	0b101100110,	  //'4'
+	0b101101101,	  //'5'
+	0b101111101,	  //'6'
+	0b1010000000001,  //'7'
+	0b101111111,	  //'8'
+	0b101100111,	  //'9'
+	0b00000000000000, //':' - changed to blank
+	0b10001000000000, //';'
+	0b110000000000,   //'<'
+	0b101001000,	  //'='
+	0b01000010000000, //'>'
+    0b01000100000011, //'?' - Added to map
+	0b00001100111011, //'@' - Added to map
+	0b101110111,	  //'A'
+	0b1001100001111,  //'B'
+	0b111001,		  //'C'
+	0b1001000001111,  //'D'
+	0b101111001,	  //'E'
+	0b101110001,	  //'F'
+	0b100111101,	  //'G'
+	0b101110110,	  //'H'
+	0b1001000001001,  //'I'
+	0b11110,		  //'J'
+	0b110001110000,   //'K'
+	0b111000,		  //'L'
+	0b10010110110,	  //'M'
+	0b100010110110,   //'N'
+	0b111111,		  //'O'
+	0b101110011,	  //'P'
+	0b100000111111,   //'Q'
+	0b100101110011,   //'R'
+	0b110001101,	  //'S'
+	0b1001000000001,  //'T'
+	0b111110,		  //'U'
+	0b10010000110000, //'V'
+	0b10100000110110, //'W'
+	0b10110010000000, //'X'
+	0b1010010000000,  //'Y'
+	0b10010000001001, //'Z'
+	0b111001,		  //'['
+	0b100010000000,   //'\'
+	0b1111,			  //']'
+    0b10100000000000, //'^' - Added to map
+	0b1000,			  //'_'
+	0b10000000,		  //'`'
+	0b101011111,	  //'a'
+	0b100001111000,   //'b'
+	0b101011000,	  //'c'
+	0b10000100001110, //'d'
+	0b1111001,		  //'e'
+	0b1110001,		  //'f'
+	0b110001111,	  //'g'
+	0b101110100,	  //'h'
+	0b1000000000000,  //'i'
+	0b1110,			  //'j'
+	0b1111000000000,  //'k'
+	0b1001000000000,  //'l'
+	0b1000101010100,  //'m'
+	0b100001010000,   //'n'
+	0b101011100,	  //'o'
+	0b10001110001,	  //'p'
+	0b100101100011,   //'q'
+	0b1010000,		  //'r'
+	0b110001101,	  //'s'
+	0b1111000,		  //'t'
+	0b11100,		  //'u'
+	0b10000000010000, //'v'
+	0b10100000010100, //'w'
+	0b10110010000000, //'x'
+	0b1100001110,	  //'y'
+	0b10010000001001, //'z'
+	0b10000011001001, //'{'
+	0b1001000000000,  //'|'
+	0b110100001001,   //'}'
+	0b00000101010010, //'~' - Added to map
+	0b11111111111111, //Unknown character (DEL or RUBOUT)
+};
 
 /*--------------------------- Device Status----------------------------------*/
 
@@ -394,7 +499,7 @@ bool HT16K33::decimalOn()
 			status = false;
 	}
 
-	Serial.println(status);
+	//Serial.println(status);
 	return status;
 }
 
@@ -529,109 +634,6 @@ void HT16K33::illuminateChar(uint16_t segmentsToTurnOn, uint8_t digit)
 	}
 }
 
-#define SFE_ALPHANUM_UNKNOWN_CHAR 95
-
-//This is the lookup table of segments for various characters
-static uint16_t alphanumeric_segs[96]{
-	//nmlkjihgfedcba
-	0b00000000000000, //' ' (space)
-	0b00001000001000, //'!'  - added to map
-	0b00001000000010, //'"' - added to map
- 	0b1001101001110,  //'#'
-	0b1001101101101,  //'$'
-	0b10010000100100, //'%'
-	0b110011011001,   //'&'
-	0b1000000000,	  //'''
-	0b111001,		  //'('
-	0b1111,			  //')'
-	0b11111010000000, //'*'
-	0b1001101000000,  //'+'
-	0b10000000000000, //','
-	0b101000000,	  //'-'
-	0b10,			  //'.' - DEBUG: need to test
-	0b10010000000000, //'/'
-	0b111111,		  //'0'
-	0b10000000110,	  //'1'
-	0b101011011,	  //'2'
-	0b101001111,	  //'3'
-	0b101100110,	  //'4'
-	0b101101101,	  //'5'
-	0b101111101,	  //'6'
-	0b1010000000001,  //'7'
-	0b101111111,	  //'8'
-	0b101100111,	  //'9'
-	0b1,			  //':' - DEBUG: need to test
-	0b10001000000000, //';'
-	0b110000000000,   //'<'
-	0b101001000,	  //'='
-	0b10000010000000, //'>'
-    0b01001000000000, //':' - Added to map
-	0b10001000000000, //';' - Added to map
-	0b101110111,	  //'A'
-	0b1001100001111,  //'B'
-	0b111001,		  //'C'
-	0b1001000001111,  //'D'
-	0b101111001,	  //'E'
-	0b101110001,	  //'F'
-	0b100111101,	  //'G'
-	0b101110110,	  //'H'
-	0b1001000001001,  //'I'
-	0b11110,		  //'J'
-	0b110001110000,   //'K'
-	0b111000,		  //'L'
-	0b10010110110,	  //'M'
-	0b100010110110,   //'N'
-	0b111111,		  //'O'
-	0b101110011,	  //'P'
-	0b100000111111,   //'Q'
-	0b100101110011,   //'R'
-	0b110001101,	  //'S'
-	0b1001000000001,  //'T'
-	0b111110,		  //'U'
-	0b10010000110000, //'V'
-	0b10100000110110, //'W'
-	0b10110010000000, //'X'
-	0b1010010000000,  //'Y'
-	0b10010000001001, //'Z'
-	0b111001,		  //'['
-	0b100010000000,   //'\'
-	0b1111,			  //']'
-    0b10100000000000, //'^' - Added to map
-	0b1000,			  //'_'
-	0b10000000,		  //'`'
-	0b101011111,	  //'a'
-	0b100001111000,   //'b'
-	0b101011000,	  //'c'
-	0b10000100001110, //'d'
-	0b1111001,		  //'e'
-	0b1110001,		  //'f'
-	0b110001111,	  //'g'
-	0b101110100,	  //'h'
-	0b1000000000000,  //'i'
-	0b1110,			  //'j'
-	0b1111000000000,  //'k'
-	0b1001000000000,  //'l'
-	0b1000101010100,  //'m'
-	0b100001010000,   //'n'
-	0b101011100,	  //'o'
-	0b10001110001,	  //'p'
-	0b100101100011,   //'q'
-	0b1010000,		  //'r'
-	0b110001101,	  //'s'
-	0b1111000,		  //'t'
-	0b11100,		  //'u'
-	0b10000000010000, //'v'
-	0b10100000010100, //'w'
-	0b10110010000000, //'x'
-	0b1100001110,	  //'y'
-	0b10010000001001, //'z'
-	0b10000011001001, //'{'
-	0b1001000000000,  //'|'
-	0b110100001001,   //'}'
-	0b00000101010010, //'~' - Added to map
-	0b11111111111111, //Unknown character (DEL or RUBOUT)
-};
-
 //Show a character on display
 void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 {
@@ -660,10 +662,12 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 	// if (characterPosition > sizeof(alphanumeric_segs))
 	// 	characterPosition = sizeof(alphanumeric_segs) - 1; //Unknown char
 
-	illuminateChar(alphanumeric_segs[characterPosition], digit);
+	uint16_t segmentsToTurnOn = getSegmentsToTurnOn(characterPosition);
+
+	illuminateChar(segmentsToTurnOn, digit);
 }
 
-//Update the lookup table of segments for a particular character
+//Update the list to define a new segments display for a particular character
 bool HT16K33::defineChar(uint8_t displayChar, uint16_t segmentsToTurnOn)
 {
 	bool result = false;
@@ -671,16 +675,66 @@ bool HT16K33::defineChar(uint8_t displayChar, uint16_t segmentsToTurnOn)
 	//Check to see if character is within range of displayable ASCII characters
 	if (displayChar >= '!' && displayChar <= '~')
 	{
-		//Get the index of character in map and update its 14-bit segment value
-		uint16_t characterPosition = displayChar - '!' + 1;
+	  //Get the index of character in table and update its 14-bit segment value
+	  uint16_t characterPosition = displayChar - '!' + 1;
 
-		//Mask the input segment value to 14 bits only
-		alphanumeric_segs[characterPosition] = (segmentsToTurnOn & 0x3FFF);
+      //Create a new character definition
+      struct CharDef * pNewCharDef = calloc(1, sizeof(CharDef));
 
-		//We're all good
-		result = true;
-	}
-	return result;
+	  //Set the position to the table index
+      pNewCharDef -> position = characterPosition;
+      //Mask the segment value to 14 bits only
+      pNewCharDef -> segments = segmentsToTurnOn & 0x3FFF;
+      //New definition always goes at the end of the list
+      pNewCharDef -> next = NULL;
+
+      //If list is empty set it to the new item
+      if (pCharDefList == NULL)
+      {
+	    pCharDefList = pNewCharDef;
+      }
+      else
+      {
+      //Otherwise go to the end of the list and add it there
+      struct CharDef * pTail = pCharDefList;
+
+      while(pTail->next != NULL)
+      {
+        pTail = pTail->next;
+      }
+
+      pTail->next = pNewCharDef;
+    }
+	//We added the definition so we're all good
+	result = true;
+  }
+  return result;
+}
+
+//Get the character map from the definition list or default table
+uint16_t HT16K33::getSegmentsToTurnOn(uint8_t charPos)
+{
+  uint16_t segments = 0;
+  //pointer to a defined character in list
+  struct CharDef * pDefChar = pCharDefList;
+
+  //Search the chacters list for a match
+  while(pDefChar && (pDefChar->position != charPos))
+  {
+    pDefChar = pDefChar -> next;
+  }
+
+  //If we found a match return that value
+  if (pDefChar != NULL)
+  {
+    segments = pDefChar -> segments;
+  }
+  //Otherwise get the value from the table
+  else
+  {
+    segments = pgm_read_word_near(alphanumeric_segs + charPos);
+  }
+  return segments;
 }
 
 /*

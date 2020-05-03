@@ -29,13 +29,13 @@ void setup() {
   Serial.println("Qwiic Alphanumeric examples");
   Wire.begin(); //Join I2C bus
 
-  //check if displays will acknowledge
+  //check if display will acknowledge
   if (display.begin() == false)
   {
     Serial.println("Device did not acknowledge! Freezing.");
     while(1);
   }
-  Serial.println("Displays acknowledged.");
+  Serial.println("Display acknowledged.");
   
   //Just for demo purposes, show original characters before change
   display.print("cafe");
@@ -50,7 +50,7 @@ void setup() {
   display.defineChar('a', 0b01000001011000);                              
   display.defineChar('e', 0b10000001011000);
   display.defineChar('f', 0b01010101000000);
-  //Also use constants SEG_A - SEG_N to define characters
+  //Also can use constants SEG_A - SEG_N to define characters
   display.defineChar('s', SEG_L | SEG_I | SEG_D); // 0b00100100001000  
   display.defineChar('z', SEG_N | SEG_G | SEG_D); // 0b10000001001000
 }

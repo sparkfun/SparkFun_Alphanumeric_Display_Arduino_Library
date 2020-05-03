@@ -81,6 +81,13 @@ typedef enum
     ALPHA_CMD_DIMMING_SETUP = 0b11100000,
 } alpha_command_t;
 
+//Structure for defining new character displays
+struct CharDef {
+  uint8_t  position;
+  int16_t segments;
+  struct CharDef * next;
+};
+
 // class HT16K33
 class HT16K33 : public Print
 {
@@ -100,6 +107,9 @@ private:
     //Enough RAM for up to 4 displays on same I2C bus
     uint8_t displayRAM[16 * 4];
     char displayContent[4 * 4 + 1] = "";
+
+    //Linked List of character definitions
+    struct CharDef * pCharDefList = NULL;
 
 public:
     //Device status
@@ -140,6 +150,7 @@ public:
 
     //Define Character Segment Map
     bool defineChar(uint8_t displayChar, uint16_t segmentsToTurnOn);
+    uint16_t getSegmentsToTurnOn (uint8_t charPos);
 
     //Colon and decimal
     bool decimalOn();
