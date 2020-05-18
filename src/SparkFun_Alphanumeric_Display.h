@@ -5,6 +5,8 @@ Priyanka Makin @ SparkFun Electronics
 Original Creation Date: July 25, 2019
 https://github.com/sparkfun/SparkFun_Alphanumeric_Display_Arduino_Library
 
+Updated April 30, 2020 by Gaston Williams to add defineChar function
+
 Pickup a board here: https://sparkle.sparkfun.com/sparkle/storefront_products/16391
 
 This file prototypes the HT16K33 class, implemented in SparkFun_Alphanumeric_Display.cpp.
@@ -28,6 +30,23 @@ Distributed as-is; no warranty is given.
 #define DEFAULT_ADDRESS 0x70 //Default I2C address when A0, A1 are floating
 // #define DEV_ID 0x12          //Device ID that I just made up
 #define DEFAULT_NOTHING_ATTACHED 0xFF
+
+//Define constants for segment bits
+#define SEG_A 0x0001
+#define SEG_B 0x0002
+#define SEG_C 0x0004
+#define SEG_D 0x0008
+#define SEG_E 0x0010
+#define SEG_F 0x0020
+#define SEG_G 0x0040
+#define SEG_H 0x0080
+#define SEG_I 0x0100
+#define SEG_J 0x0200
+#define SEG_K 0x0400
+#define SEG_L 0x0800
+#define SEG_M 0x1000
+#define SEG_N 0x2000
+
 
 typedef enum
 {
@@ -62,6 +81,13 @@ typedef enum
     ALPHA_CMD_DIMMING_SETUP = 0b11100000,
 } alpha_command_t;
 
+//Structure for defining new character displays
+struct CharDef {
+  uint8_t  position;
+  int16_t segments;
+  struct CharDef * next;
+};
+
 // class HT16K33
 class HT16K33 : public Print
 {
@@ -81,6 +107,9 @@ private:
     //Enough RAM for up to 4 displays on same I2C bus
     uint8_t displayRAM[16 * 4];
     char displayContent[4 * 4 + 1] = "";
+
+    //Linked List of character definitions
+    struct CharDef * pCharDefList = NULL;
 
 public:
     //Device status
@@ -118,6 +147,10 @@ public:
     void illuminateChar(uint16_t disp, uint8_t digit);
     void printChar(uint8_t displayChar, uint8_t digit);
     bool updateDisplay();
+
+    //Define Character Segment Map
+    bool defineChar(uint8_t displayChar, uint16_t segmentsToTurnOn);
+    uint16_t getSegmentsToTurnOn (uint8_t charPos);
 
     //Colon and decimal
     bool decimalOn();
