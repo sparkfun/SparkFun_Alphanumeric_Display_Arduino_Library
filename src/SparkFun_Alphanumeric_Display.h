@@ -26,6 +26,8 @@ Distributed as-is; no warranty is given.
 
 #include <Arduino.h>
 #include <Wire.h>
+#include <stdio.h>
+#include <stdlib.h>
 
 #define DEFAULT_ADDRESS 0x70 //Default I2C address when A0, A1 are floating
 // #define DEV_ID 0x12          //Device ID that I just made up

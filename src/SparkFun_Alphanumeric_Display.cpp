@@ -679,7 +679,7 @@ bool HT16K33::defineChar(uint8_t displayChar, uint16_t segmentsToTurnOn)
 	  uint16_t characterPosition = displayChar - '!' + 1;
 
       //Create a new character definition
-      struct CharDef * pNewCharDef = calloc(1, sizeof(CharDef));
+      struct CharDef * pNewCharDef = (CharDef *)calloc(1, sizeof(CharDef));
 
 	  //Set the position to the table index
       pNewCharDef -> position = characterPosition;
