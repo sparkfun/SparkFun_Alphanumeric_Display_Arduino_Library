@@ -1,11 +1,11 @@
-==================================
-CLASS
-==================================
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
 HT16K33	KEYWORD1
 
-==================================
-FUNCTIONS
-==================================
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
 begin	KEYWORD2
 isConnected	KEYWORD2
 initialize	KEYWORD2
@@ -44,13 +44,9 @@ readRAM	KEYWORD2
 writeRAM	KEYWORD2
 writeRAM	KEYWORD2
 
-==================================
-CONSTANTS
-==================================
+#######################################
+# Constants (LITERAL1)
+#######################################
 DEFAULT_ADDRESS	LITERAL1
 DEV_ID	LITERAL1
 DEFAULT_NOTHING_ATTACHED	LITERAL1
-
-==================================
-DATA TYPES
-==================================
