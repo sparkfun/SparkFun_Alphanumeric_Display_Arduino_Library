@@ -29,14 +29,19 @@ local, and you've found our code helpful, please buy us a round!
 Distributed as-is; no warranty is given.
 ******************************************************************************/
 
-#include <avr/pgmspace.h>
 #include <SparkFun_Alphanumeric_Display.h>
 
 /*--------------------------- Character Map ----------------------------------*/
 #define SFE_ALPHANUM_UNKNOWN_CHAR 95
 
 //This is the lookup table of segments for various characters
+//For AVR architecture, use PROGMEM
+#if defined(ARDUINO_ARCH_AVR)
+#include <avr/pgmspace.h>
 static const uint16_t PROGMEM alphanumeric_segs[96]{
+#else
+static const uint16_t alphanumeric_segs[96]{
+#endif
 	//nmlkjihgfedcba
 	0b00000000000000, //' ' (space)
 	0b00001000001000, //'!'  - added to map
