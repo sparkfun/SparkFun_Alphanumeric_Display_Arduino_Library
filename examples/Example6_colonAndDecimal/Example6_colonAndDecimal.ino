@@ -27,7 +27,7 @@ void setup(){
 
   Wire.begin();
 
-  if (display.begin(0x70) == false)
+  if (display.begin() == false)
   {
     Serial.println("Device did not acknowledge! Freezing.");
     while(1);

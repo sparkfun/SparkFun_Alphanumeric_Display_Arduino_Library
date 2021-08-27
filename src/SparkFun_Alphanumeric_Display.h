@@ -29,11 +29,10 @@ Distributed as-is; no warranty is given.
 #include <stdio.h>
 #include <stdlib.h>
 
-#define DEFAULT_ADDRESS 0x70 //Default I2C address when A0, A1 are floating
-// #define DEV_ID 0x12          //Device ID that I just made up
+#define DEFAULT_ADDRESS 0x70 // Default I2C address when A0, A1 are floating
 #define DEFAULT_NOTHING_ATTACHED 0xFF
 
-//Define constants for segment bits
+// Define constants for segment bits
 #define SEG_A 0x0001
 #define SEG_B 0x0002
 #define SEG_C 0x0004
@@ -83,7 +82,7 @@ typedef enum
     ALPHA_CMD_DIMMING_SETUP = 0b11100000,
 } alpha_command_t;
 
-//Structure for defining new character displays
+// Structure for defining new character displays
 struct CharDef {
   uint8_t  position;
   int16_t segments;
@@ -94,27 +93,27 @@ struct CharDef {
 class HT16K33 : public Print
 {
 private:
-    TwoWire *_i2cPort;          //The generic connection to user's chosen I2C hardware
+    TwoWire *_i2cPort;          // The generic connection to user's chosen I2C hardware
     uint8_t _deviceAddressLeft; // Address of primary alphanumeric display
     uint8_t _deviceAddressLeftCenter;
     uint8_t _deviceAddressRightCenter;
     uint8_t _deviceAddressRight;
     uint8_t digitPosition = 0;
     uint8_t numberOfDisplays = 1;
-    bool displayOnOff = 0; //Tracks display on/off bit of display setup register
+    bool displayOnOff = 0; // Tracks display on/off bit of display setup register
     bool decimalOnOff = 0;
     bool colonOnOff = 0;
-    uint8_t blinkRate = ALPHA_BLINK_RATE_NOBLINK; //Tracks blink bits in display setup register
+    uint8_t blinkRate = ALPHA_BLINK_RATE_NOBLINK; // Tracks blink bits in display setup register
 
-    //Enough RAM for up to 4 displays on same I2C bus
+    // Enough RAM for up to 4 displays on same I2C bus
     uint8_t displayRAM[16 * 4];
     char displayContent[4 * 4 + 1] = "";
 
-    //Linked List of character definitions
+    // Linked List of character definitions
     struct CharDef * pCharDefList = NULL;
 
 public:
-    //Device status
+    // Device status
     bool begin(uint8_t addressLeft = DEFAULT_ADDRESS,
                uint8_t addressLeftCenter = DEFAULT_NOTHING_ATTACHED,
                uint8_t addressRightCenter = DEFAULT_NOTHING_ATTACHED,
@@ -144,17 +143,17 @@ public:
     bool enableSystemClockSingle(uint8_t displayNumber);
     bool disableSystemClockSingle(uint8_t displayNumber);
 
-    //Light up functions
+    // Light up functions
     void illuminateSegment(uint8_t segment, uint8_t digit);
     void illuminateChar(uint16_t disp, uint8_t digit);
     void printChar(uint8_t displayChar, uint8_t digit);
     bool updateDisplay();
 
-    //Define Character Segment Map
+    // Define Character Segment Map
     bool defineChar(uint8_t displayChar, uint16_t segmentsToTurnOn);
     uint16_t getSegmentsToTurnOn (uint8_t charPos);
 
-    //Colon and decimal
+    // Colon and decimal
     bool decimalOn();
     bool decimalOff();
     bool decimalOnSingle(uint8_t displayNumber);
@@ -170,12 +169,12 @@ public:
     bool shiftRight(uint8_t shiftAmt = 1);
     bool shiftLeft(uint8_t shiftAmt = 1);
 
-    // For print
+    // For overloading the print function
     virtual size_t write(uint8_t);
     virtual size_t write(const uint8_t *buffer, size_t size);
     virtual size_t write(const char *str);
 
-    //I2C abstraction
+    // I2C abstraction
     bool readRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffSize);
     // bool read(uint8_t reg, uint8_t data);
     bool writeRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffSize);

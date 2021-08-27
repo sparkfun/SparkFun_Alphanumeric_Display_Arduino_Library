@@ -42,6 +42,6 @@ void setup() {
 
 void loop() 
 {  
-  delay(200);
+  delay(300);
   display.shiftLeft();
 }
