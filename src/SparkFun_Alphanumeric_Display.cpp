@@ -262,7 +262,7 @@ bool HT16K33::disableSystemClock()
 	bool status = true;
 	for (uint8_t i = 0; i < numberOfDisplays; i++)
 	{
-		if (enableSystemClockSingle(i) == false)
+		if (disableSystemClockSingle(i) == false)
 			status = false;
 	}
 	return status;
