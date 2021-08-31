@@ -194,7 +194,7 @@ bool HT16K33::begin(uint8_t addressLeft, uint8_t addressLeftCenter, uint8_t addr
 	return true;
 }
 
-// Check that all displays are responding on the I2C bus
+// Check that the display is responding on the I2C bus
 // The Holtek IC sometimes fails to respond. This attempts multiple times before giving up.
 bool HT16K33::isConnected(uint8_t displayNumber)
 {

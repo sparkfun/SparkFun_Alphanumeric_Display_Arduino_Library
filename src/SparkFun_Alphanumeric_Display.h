@@ -121,17 +121,14 @@ public:
                TwoWire &wirePort = Wire); // Sets the address of the device and opens the Wire port for communication
     bool isConnected(uint8_t displayNumber);
     bool initialize();
-    // bool checkDeviceID(uint8_t displayNumber);
     uint8_t lookUpDisplayAddress(uint8_t displayNumber);
 
     //Display configuration functions
     bool clear();
     bool setBrightness(uint8_t duty);
     bool setBrightnessSingle(uint8_t displayNumber, uint8_t duty);
-    // uint8_t getBrightness();
     bool setBlinkRate(float rate);
     bool setBlinkRateSingle(uint8_t displayNumber, float rate);
-    // uint8_t getBlinkRate();
     bool displayOn();
     bool displayOff();
     bool displayOnSingle(uint8_t displayNumber);
@@ -153,19 +150,21 @@ public:
     bool defineChar(uint8_t displayChar, uint16_t segmentsToTurnOn);
     uint16_t getSegmentsToTurnOn (uint8_t charPos);
 
-    // Colon and decimal
+    // Decimal functions
     bool decimalOn();
     bool decimalOff();
     bool decimalOnSingle(uint8_t displayNumber);
     bool decimalOffSingle(uint8_t displayNumber);
     bool setDecimalOnOff(uint8_t displayNumber, bool turnOnDecimal);
-
+    
+    // Colon functions
     bool colonOn();
     bool colonOff();
     bool colonOnSingle(uint8_t displayNumber);
     bool colonOffSingle(uint8_t displayNumber);
     bool setColonOnOff(uint8_t displayNumber, bool turnOnColon);
 
+    // Shifting
     bool shiftRight(uint8_t shiftAmt = 1);
     bool shiftLeft(uint8_t shiftAmt = 1);
 
@@ -176,7 +175,6 @@ public:
 
     // I2C abstraction
     bool readRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffSize);
-    // bool read(uint8_t reg, uint8_t data);
     bool writeRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffSize);
     bool writeRAM(uint8_t reg, uint8_t data);
 };
