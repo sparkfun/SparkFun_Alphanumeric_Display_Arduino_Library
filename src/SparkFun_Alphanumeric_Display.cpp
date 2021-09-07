@@ -163,7 +163,7 @@ bool HT16K33::begin(uint8_t addressDisplayOne, uint8_t addressDisplayTwo, uint8_
 
 	_i2cPort = &wirePort; // Remember the user's setting
 
-	for (uint8_t i = 0; i < numberOfDisplays; i++)
+	for (uint8_t i = 1; i <= numberOfDisplays; i++)
 	{
 		
 		if (isConnected(i) == false)
@@ -224,7 +224,7 @@ bool HT16K33::initialize()
 	}
 
 	// Set brightness of all displays to full brightness
-	if (setBrightness(16) == false)
+	if (setBrightness(15) == false)
 	{
 		return false;
 	}
@@ -248,7 +248,7 @@ bool HT16K33::initialize()
 bool HT16K33::enableSystemClock()
 {
 	bool status = true;
-	for (uint8_t i = 0; i < numberOfDisplays; i++)
+	for (uint8_t i = 1; i <= numberOfDisplays; i++)
 	{
 		if (enableSystemClockSingle(i) == false)
 			status = false;
@@ -260,7 +260,7 @@ bool HT16K33::enableSystemClock()
 bool HT16K33::disableSystemClock()
 {
 	bool status = true;
-	for (uint8_t i = 0; i < numberOfDisplays; i++)
+	for (uint8_t i = 1; i <= numberOfDisplays; i++)
 	{
 		if (disableSystemClockSingle(i) == false)
 			status = false;
@@ -291,16 +291,16 @@ uint8_t HT16K33::lookUpDisplayAddress(uint8_t displayNumber)
 {
 	switch (displayNumber)
 	{
-	case 0:
+	case 1:
 		return _deviceAddressDisplayOne;
 		break;
-	case 1:
+	case 2:
 		return _deviceAddressDisplayTwo;
 		break;
-	case 2:
+	case 3:
 		return _deviceAddressDisplayThree;
 		break;
-	case 3:
+	case 4:
 		return _deviceAddressDisplayFour;
 		break;
 	}
@@ -327,7 +327,7 @@ bool HT16K33::clear()
 bool HT16K33::setBrightness(uint8_t duty)
 {
 	bool status = true;
-	for (uint8_t i = 0; i < numberOfDisplays; i++)
+	for (uint8_t i = 1; i <= numberOfDisplays; i++)
 	{
 		if (setBrightnessSingle(i, duty) == false)
 			status = false;
@@ -341,6 +341,8 @@ bool HT16K33::setBrightnessSingle(uint8_t displayNumber, uint8_t duty)
 {
 	if (duty > 15) // Error check
 		duty = 15; 
+	else if (duty < 0)
+		duty = 0;
 
 	uint8_t dataToWrite = ALPHA_CMD_DIMMING_SETUP | duty;
 	return (writeRAM(lookUpDisplayAddress(displayNumber), dataToWrite));
@@ -353,7 +355,7 @@ bool HT16K33::setBrightnessSingle(uint8_t displayNumber, uint8_t duty)
 bool HT16K33::setBlinkRate(float rate)
 {
 	bool status = true;
-	for (uint8_t i = 0; i < numberOfDisplays; i++)
+	for (uint8_t i = 1; i <= numberOfDisplays; i++)
 	{
 		if (setBlinkRateSingle(i, rate) == false)
 			status = false;
@@ -422,7 +424,7 @@ bool HT16K33::displayOn()
 
 	displayOnOff = ALPHA_DISPLAY_ON;
 
-	for (uint8_t i = 0; i < numberOfDisplays; i++)
+	for (uint8_t i = 1; i <= numberOfDisplays; i++)
 	{
 		if (displayOnSingle(i) == false)
 			status = false;
@@ -438,7 +440,7 @@ bool HT16K33::displayOff()
 
 	displayOnOff = ALPHA_DISPLAY_OFF;
 
-	for (uint8_t i = 0; i < numberOfDisplays; i++)
+	for (uint8_t i = 1; i <= numberOfDisplays; i++)
 	{
 		if (displayOffSingle(i) == false)
 			status = false;
@@ -487,7 +489,7 @@ bool HT16K33::decimalOn()
 
 	decimalOnOff = ALPHA_DECIMAL_ON;
 
-	for (uint8_t i = 0; i < numberOfDisplays; i++)
+	for (uint8_t i = 1; i <= numberOfDisplays; i++)
 	{
 		if (decimalOnSingle(i) == false)
 			status = false;
@@ -504,7 +506,7 @@ bool HT16K33::decimalOff()
 
 	decimalOnOff = ALPHA_DECIMAL_OFF;
 
-	for (uint8_t i = 0; i < numberOfDisplays; i++)
+	for (uint8_t i = 1; i <= numberOfDisplays; i++)
 	{
 		if (decimalOffSingle(i) == false)
 			status = false;
@@ -552,7 +554,7 @@ bool HT16K33::colonOn()
 
 	colonOnOff = ALPHA_COLON_ON;
 
-	for (uint8_t i = 0; i < numberOfDisplays; i++)
+	for (uint8_t i = 1; i <= numberOfDisplays; i++)
 	{
 		if (colonOnSingle(i) == false)
 			status = false;
@@ -567,7 +569,7 @@ bool HT16K33::colonOff()
 
 	colonOnOff = ALPHA_COLON_OFF;
 
-	for (uint8_t i = 0; i < numberOfDisplays; i++)
+	for (uint8_t i = 1; i <= numberOfDisplays; i++)
 	{
 		if (colonOffSingle(i) == false)
 			status = false;
@@ -808,9 +810,9 @@ bool HT16K33::updateDisplay()
 
 	bool status = true;
 
-	for (uint8_t i = 0; i < numberOfDisplays; i++)
+	for (uint8_t i = 1; i <= numberOfDisplays; i++)
 	{
-		if (writeRAM(lookUpDisplayAddress(i), 0, (uint8_t *)(displayRAM + (i * 16)), 16) == false)
+		if (writeRAM(lookUpDisplayAddress(i), 0, (uint8_t *)(displayRAM + ((i-1) * 16)), 16) == false)
 		{
 			//Serial.print("updateDisplay fail at display 0x");
 			//Serial.println(lookUpDisplayAddress(i), HEX);
