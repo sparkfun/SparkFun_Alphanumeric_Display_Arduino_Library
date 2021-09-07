@@ -94,10 +94,10 @@ class HT16K33 : public Print
 {
 private:
     TwoWire *_i2cPort;          // The generic connection to user's chosen I2C hardware
-    uint8_t _deviceAddressLeft; // Address of primary alphanumeric display
-    uint8_t _deviceAddressLeftCenter;
-    uint8_t _deviceAddressRightCenter;
-    uint8_t _deviceAddressRight;
+    uint8_t _deviceAddressDisplayOne; // Address of primary alphanumeric display
+    uint8_t _deviceAddressDisplayTwo;
+    uint8_t _deviceAddressDisplayThree;
+    uint8_t _deviceAddressDisplayFour;
     uint8_t digitPosition = 0;
     uint8_t numberOfDisplays = 1;
     bool displayOnOff = 0; // Tracks display on/off bit of display setup register
@@ -114,10 +114,10 @@ private:
 
 public:
     // Device status
-    bool begin(uint8_t addressLeft = DEFAULT_ADDRESS,
-               uint8_t addressLeftCenter = DEFAULT_NOTHING_ATTACHED,
-               uint8_t addressRightCenter = DEFAULT_NOTHING_ATTACHED,
-               uint8_t addressRight = DEFAULT_NOTHING_ATTACHED,
+    bool begin(uint8_t addressDisplayOne = DEFAULT_ADDRESS,
+               uint8_t addressDisplayTwo = DEFAULT_NOTHING_ATTACHED,
+               uint8_t addressDisplayThree = DEFAULT_NOTHING_ATTACHED,
+               uint8_t addressDisplayFour = DEFAULT_NOTHING_ATTACHED,
                TwoWire &wirePort = Wire); // Sets the address of the device and opens the Wire port for communication
     bool isConnected(uint8_t displayNumber);
     bool initialize();
