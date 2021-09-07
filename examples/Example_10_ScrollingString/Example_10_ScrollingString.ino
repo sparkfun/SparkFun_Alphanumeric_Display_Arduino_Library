@@ -26,7 +26,7 @@ HT16K33 display;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("Qwiic Alphanumeric examples");
+  Serial.println("SparkFun Qwiic Alphanumeric - Example 10: Scrolling String");
   Wire.begin(); //Join I2C bus
 
   //check if displays will acknowledge
@@ -44,4 +44,6 @@ void loop()
 {  
   delay(300);
   display.shiftLeft();
+  //Alternatively - you could also shift the string to the right
+  //display.shiftRight();
 }

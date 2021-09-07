@@ -25,7 +25,7 @@ HT16K33 display;
 void setup()
 {
   Serial.begin(115200);
-  Serial.println("Qwiic Alphanumeric examples");
+  Serial.println("SparkFun Qwiic Alphanumeric - Example 2: Turn On One Segment");
   Wire.begin(); //Join I2C bus
 
   //check if display will acknowledge

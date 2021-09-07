@@ -348,7 +348,7 @@ bool HT16K33::setBrightnessSingle(uint8_t displayNumber, uint8_t duty)
 
 // Set the blink rate of all displays on the bus
 // Parameter "rate" in Hz
-// Valid options for "rate" are defined by datasheet: 2, 1, or 0.5 Hz
+// Valid options for "rate" are defined by datasheet: 2.0, 1.0, or 0.5 Hz
 // Any other input to this function will result in steady alphanumeric display
 bool HT16K33::setBlinkRate(float rate)
 {
@@ -363,15 +363,15 @@ bool HT16K33::setBlinkRate(float rate)
 
 // Set the blink rate of a single display on the bus
 // Parameter "rate" is in Hz
-// Valid options for "rate" are defined by datasheet: 2, 1, or 0.5 Hz
+// Valid options for "rate" are defined by datasheet: 2.0, 1.0, or 0.5 Hz
 // Any other input to this function will result in steady alphanumeric display
 bool HT16K33::setBlinkRateSingle(uint8_t displayNumber, float rate)
 {
-	if (rate == 2)
+	if (rate == 2.0)
 	{
 		blinkRate = ALPHA_BLINK_RATE_2HZ;
 	}
-	else if (rate == 1)
+	else if (rate == 1.0)
 	{
 		blinkRate = ALPHA_BLINK_RATE_1HZ;
 	}

@@ -1,13 +1,13 @@
 /*****************************************************************************************
- * This example tests the library's response to printing colons or decimal points.
+ * This example tests illuminating whole characters on the 14-segment display.
  * 
  * Priyanka Makin @ SparkFun Electronics
  * Original Creation Date: February 3, 2020
  * 
  * SparkFun labored with love to create this code. Feel like supporting open source hardware?
- * Buy a board from SparkFun!https://www.sparkfun.com/products/16391
+ * Buy a board from SparkFun! https://www.sparkfun.com/products/16391
  * 
- * This code is Lemonadeware; if you see me (or any other SparkFun employee) at the 
+ * This code is Lemonadeware; if you see me (or any other SparkFun employee) at the
  * local, and you've found our code helpful, please buy us a round!
  * 
  * Hardware Connections:
@@ -15,18 +15,19 @@
  * Attach Qwiic Alphanumeric board to Red Board using Qwiic cable.
  * 
  * Distributed as-is; no warranty is given.
- ****************************************************************************************/
+ *****************************************************************************************/
 #include <Wire.h>
 
 #include <SparkFun_Alphanumeric_Display.h>  //Click here to get the library: http://librarymanager/All#Alphanumeric_Display by SparkFun
 HT16K33 display;
 
-void setup(){
+void setup()
+{
   Serial.begin(115200);
-  Serial.println("Qwiic Alphanumeric examples");
+  Serial.println("SparkFun Qwiic Alphanumeric - Example 3: Print Character");
+  Wire.begin(); //Join I2C bus
 
-  Wire.begin();
-
+  //check if display will acknowledge
   if (display.begin() == false)
   {
     Serial.println("Device did not acknowledge! Freezing.");
@@ -34,18 +35,13 @@ void setup(){
   }
   Serial.println("Display acknowledged.");
 
-  //You can print colons and decimals
-  //NOTE: they can only go in the character position determined by the layout of the display
-  display.print("12:3.4");
-  
-//  display.decimalOn();  //Turn decimals on
-//  display.decimalOff();   //Turn decimals off
-//  display.decimalOnSingle(0); //Turn decimal on for one display
-//  display.colon();      //Turn colons on
-//  display.colonOff();     //Turn colons off
-//  display.colonOnSingle(1); //Turn colon on for one display
+  display.printChar('W', 0);
+  display.printChar('H', 1);
+  display.printChar('A', 2);
+  display.printChar('T', 3);
+
+  display.updateDisplay();
 }
 
-void loop()
-{
+void loop(){
 }

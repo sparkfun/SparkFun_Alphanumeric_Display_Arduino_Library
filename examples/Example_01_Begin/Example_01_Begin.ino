@@ -1,8 +1,8 @@
-/*****************************************************************************************
- * This example tests illuminating whole characters on the 14-segment display.
+/**************************************************************************************
+ * Tests the begin function of the Alphanumeric display library
  * 
- * Priyanka Makin @ SparkFun Electronics
- * Original Creation Date: February 3, 2020
+ * Priyanka Makin@ SparkFun Electronics
+ * Original Creation Date: January 30, 2020
  * 
  * SparkFun labored with love to create this code. Feel like supporting open source hardware?
  * Buy a board from SparkFun! https://www.sparkfun.com/products/16391
@@ -15,7 +15,7 @@
  * Attach Qwiic Alphanumeric board to Red Board using Qwiic cable.
  * 
  * Distributed as-is; no warranty is given.
- *****************************************************************************************/
+ **************************************************************************************/
 #include <Wire.h>
 
 #include <SparkFun_Alphanumeric_Display.h>  //Click here to get the library: http://librarymanager/All#Alphanumeric_Display by SparkFun
@@ -24,7 +24,7 @@ HT16K33 display;
 void setup()
 {
   Serial.begin(115200);
-  Serial.println("Qwiic Alphanumeric examples");
+  Serial.println("SparkFun Qwiic Alphanumeric - Example 1: Begin");
   Wire.begin(); //Join I2C bus
 
   //check if display will acknowledge
@@ -34,14 +34,8 @@ void setup()
     while(1);
   }
   Serial.println("Display acknowledged.");
-
-  display.printChar('W', 0);
-  display.printChar('H', 1);
-  display.printChar('A', 2);
-  display.printChar('T', 3);
-
-  display.updateDisplay();
 }
 
-void loop(){
+void loop()
+{
 }

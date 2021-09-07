@@ -1,12 +1,11 @@
 /*****************************************************************************************
- * This example tests the library's response to printing an unknown character.
+ * This example tests the library's response to printing colons or decimal points.
  * 
  * Priyanka Makin @ SparkFun Electronics
- * Original Creation Date: March 13, 2020
- * Updated April 30, 2020 by Gaston Williams - changed exclamation to tab character
+ * Original Creation Date: February 3, 2020
  * 
  * SparkFun labored with love to create this code. Feel like supporting open source hardware?
- * Buy a board from SparkFun! https://www.sparkfun.com/products/16391
+ * Buy a board from SparkFun!https://www.sparkfun.com/products/16391
  * 
  * This code is Lemonadeware; if you see me (or any other SparkFun employee) at the 
  * local, and you've found our code helpful, please buy us a round!
@@ -22,9 +21,9 @@
 #include <SparkFun_Alphanumeric_Display.h>  //Click here to get the library: http://librarymanager/All#Alphanumeric_Display by SparkFun
 HT16K33 display;
 
-void setup() {
+void setup(){
   Serial.begin(115200);
-  Serial.println("Qwiic Alphanumeric examples");
+  Serial.println("SparkFun Qwiic Alphanumeric - Example 7: Colon And Decimal");
 
   Wire.begin();
 
@@ -35,9 +34,18 @@ void setup() {
   }
   Serial.println("Display acknowledged.");
 
-  display.print("\t\t\t\t");  //tabs are not printable characters
+  //You can print colons and decimals
+  //NOTE: they can only go in the character position determined by the layout of the display
+  display.print("12:3.4");
+  
+//  display.decimalOn();  //Turn decimals on
+//  display.decimalOff();   //Turn decimals off
+//  display.decimalOnSingle(0); //Turn decimal on for one display
+//  display.colon();      //Turn colons on
+//  display.colonOff();     //Turn colons off
+//  display.colonOnSingle(1); //Turn colon on for one display
 }
 
-void loop() 
+void loop()
 {
 }
