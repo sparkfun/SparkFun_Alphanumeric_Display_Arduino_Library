@@ -208,7 +208,6 @@ bool HT16K33::isConnected(uint8_t displayNumber)
 		{
 			return true;
 		}
-		//Serial.println("I'm in isConnected");
 		delay(100);
 	}
 	return false;
@@ -478,7 +477,7 @@ bool HT16K33::setDecimalOnOff(uint8_t displayNumber, bool turnOnDecimal)
 		dat = 0x00;
 	}
 
-	displayRAM[adr + displayNumber * 16] = displayRAM[adr + displayNumber * 16] | dat;
+	displayRAM[adr + (displayNumber - 1) * 16] = displayRAM[adr + (displayNumber - 1) * 16] | dat;
 	return (updateDisplay());
 }
 
@@ -495,7 +494,6 @@ bool HT16K33::decimalOn()
 			status = false;
 	}
 
-	//Serial.println(status);
 	return status;
 }
 
@@ -543,7 +541,7 @@ bool HT16K33::setColonOnOff(uint8_t displayNumber, bool turnOnColon)
 		dat = 0x00;
 	}
 
-	displayRAM[adr + displayNumber * 16] = displayRAM[adr + displayNumber * 16] | dat;
+	displayRAM[adr + (displayNumber - 1) * 16] = displayRAM[adr + (displayNumber - 1) * 16] | dat;
 	return (updateDisplay());
 }
 
@@ -609,19 +607,6 @@ void HT16K33::illuminateSegment(uint8_t segment, uint8_t digit)
 	if (row > 7)
 		row -= 8;
 	uint8_t dat = 1 << row;
-
-	//Temp DEBUGGING - clear segments that might affect A0/A1
-	//dat &= 0b11111100;
-
-	// Serial.print("illSeg Digit: ");
-	// Serial.print(digit);
-	// Serial.print("\t row: ");
-	// Serial.print(row);
-	// Serial.print("\t com: ");
-	// Serial.print(com);
-	// Serial.print("\t adr: ");
-	// Serial.print(adr);
-	// Serial.println();
 
 	displayRAM[adr] = displayRAM[adr] | dat;
 }
@@ -806,7 +791,6 @@ size_t HT16K33::write(const char *str)
 // Push the contents of displayRAM out to the various displays in 16 byte chunks
 bool HT16K33::updateDisplay()
 {
-	//printRAM();
 
 	bool status = true;
 

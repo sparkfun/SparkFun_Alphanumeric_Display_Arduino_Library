@@ -41,7 +41,7 @@ void setup(){
 //  display.decimalOn();  //Turn decimals on
 //  display.decimalOff();   //Turn decimals off
 //  display.decimalOnSingle(0); //Turn decimal on for one display
-//  display.colon();      //Turn colons on
+//  display.colonOn();      //Turn colons on
 //  display.colonOff();     //Turn colons off
 //  display.colonOnSingle(1); //Turn colon on for one display
 }
