@@ -19,7 +19,7 @@
  *****************************************************************************************/
 #include <Wire.h>
 
-#include <SparkFun_Alphanumeric_Display.h>  //Click here to get the library: http://librarymanager/All#Alphanumeric_Display by SparkFun
+#include <SparkFun_Alphanumeric_Display.h>  //Click here to get the library: http://librarymanager/All#SparkFun_Qwiic_Alphanumeric_Display by SparkFun
 HT16K33 display;
 
 void setup()

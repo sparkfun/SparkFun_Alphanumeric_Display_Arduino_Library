@@ -1,5 +1,5 @@
 /*****************************************************************************************
- * This example sets the brightness of the Qwiic Alphanumeric display
+ * This example sets the blink rate of the Alphanumeric Display
  * 
  * Priyanka Makin @ SparkFun Electronics
  * Original Creation Date: February 18, 2020
@@ -18,12 +18,12 @@
  *****************************************************************************************/
 #include <Wire.h>
 
-#include <SparkFun_Alphanumeric_Display.h>  //Click here to get the library: http://librarymanager/All#Alphanumeric_Display by SparkFun
+#include <SparkFun_Alphanumeric_Display.h>  //Click here to get the library: http://librarymanager/All#SparkFun_Qwiic_Alphanumeric_Display by SparkFun
 HT16K33 display;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("SparkFun Qwiic Alphanumeric - Example 5: Set Brightness");
+  Serial.println("SparkFun Qwiic Alphanumeric - Example 6: Set Blink Rate");
   Wire.begin(); //Join I2C bus
 
   //check if display will acknowledge
@@ -33,10 +33,10 @@ void setup() {
     while(1);
   }
   Serial.println("Display acknowledged.");
-  
-  //The input to setBrightness is a duty cycle over 16
-  //So, acceptable inputs to this function are ints between 0 (display off) and 15 (full brightness)
-  display.setBrightness(15);
+
+  //Blink rate in Hz
+  //Acceptable options are defined by HT16K33 datasheet and are 0.5, 1.0, or 2.0 Hz (float)
+  display.setBlinkRate(2.0);
   
   display.print("Milk");
 }

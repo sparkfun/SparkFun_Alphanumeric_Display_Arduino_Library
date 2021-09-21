@@ -1,11 +1,12 @@
 /*****************************************************************************************
- * This example tests the library's response to printing colons or decimal points.
+ * This example tests the library's response to printing an unknown character.
  * 
  * Priyanka Makin @ SparkFun Electronics
- * Original Creation Date: February 3, 2020
+ * Original Creation Date: March 13, 2020
+ * Updated April 30, 2020 by Gaston Williams - changed exclamation to tab character
  * 
  * SparkFun labored with love to create this code. Feel like supporting open source hardware?
- * Buy a board from SparkFun!https://www.sparkfun.com/products/16391
+ * Buy a board from SparkFun! https://www.sparkfun.com/products/16391
  * 
  * This code is Lemonadeware; if you see me (or any other SparkFun employee) at the 
  * local, and you've found our code helpful, please buy us a round!
@@ -18,12 +19,12 @@
  ****************************************************************************************/
 #include <Wire.h>
 
-#include <SparkFun_Alphanumeric_Display.h>  //Click here to get the library: http://librarymanager/All#Alphanumeric_Display by SparkFun
+#include <SparkFun_Alphanumeric_Display.h>  //Click here to get the library: http://librarymanager/All#SparkFun_Qwiic_Alphanumeric_Display by SparkFun
 HT16K33 display;
 
-void setup(){
+void setup() {
   Serial.begin(115200);
-  Serial.println("SparkFun Qwiic Alphanumeric - Example 7: Colon And Decimal");
+  Serial.println("SparkFun Qwiic Alphanumeric - Example 8: Unknown Char");
 
   Wire.begin();
 
@@ -34,18 +35,11 @@ void setup(){
   }
   Serial.println("Display acknowledged.");
 
-  //You can print colons and decimals
-  //NOTE: they can only go in the character position determined by the layout of the display
-  display.print("12:3.4");
-  
-//  display.decimalOn();  //Turn decimals on
-//  display.decimalOff();   //Turn decimals off
-//  display.decimalOnSingle(0); //Turn decimal on for one display
-//  display.colonOn();      //Turn colons on
-//  display.colonOff();     //Turn colons off
-//  display.colonOnSingle(1); //Turn colon on for one display
+  //Because this is a character unknown to the library, expect the display
+  //To turn on all segments for that unknown digit
+  display.print("\t\t\t\t");  //tabs are not printable characters
 }
 
-void loop()
+void loop() 
 {
 }
