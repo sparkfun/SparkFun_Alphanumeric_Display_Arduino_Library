@@ -636,7 +636,7 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 		characterPosition = displayChar - '!' + 1;
 	}
 
-	uint8_t dispNum = digitPosition / 4;
+	uint8_t dispNum = (digitPosition / 4) + 1;
 
 	// Take care of special characters by turning correct segment on
 	if (characterPosition == 14) // '.'
