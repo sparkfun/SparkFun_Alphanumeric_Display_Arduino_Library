@@ -728,7 +728,7 @@ uint16_t HT16K33::getSegmentsToTurnOn(uint8_t charPos)
 size_t HT16K33::write(uint8_t b)
 {
 	// If user wants to print '.' or ':', don't increment the digitPosition!
-	if (b == '.' | b == ':')
+	if (b == '.' || b == ':')
 		printChar(b, 0);
 	else
 	{
