@@ -26,7 +26,7 @@ HT16K33 display;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("SparkFun Qwiic Alphanumeric - Example 9: Multi Display");
+  Serial.println("SparkFun Qwiic Alphanumeric - Example 8: Multi Display");
   Wire.begin(); //Join I2C bus
 
   //check if displays will acknowledge

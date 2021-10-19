@@ -24,7 +24,7 @@ HT16K33 display;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("SparkFun Qwiic Alphanumeric - Example 8: Unknown Char");
+  Serial.println("SparkFun Qwiic Alphanumeric - Example 7: Unknown Char");
 
   Wire.begin();
 

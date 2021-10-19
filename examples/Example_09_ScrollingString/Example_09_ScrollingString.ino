@@ -26,18 +26,18 @@ HT16K33 display;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("SparkFun Qwiic Alphanumeric - Example 10: Scrolling String");
+  Serial.println("SparkFun Qwiic Alphanumeric - Example 9: Scrolling String");
   Wire.begin(); //Join I2C bus
 
   //check if displays will acknowledge
-  if (display.begin(0x70, 0x71) == false)
+  if (display.begin(0x70) == false)
   {
     Serial.println("Device did not acknowledge! Freezing.");
     while(1);
   }
   Serial.println("Displays acknowledged.");
 
-  display.print("GET MILK");
+  display.print("MILK");
 }
 
 void loop() 

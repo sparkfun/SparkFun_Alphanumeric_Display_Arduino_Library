@@ -23,7 +23,7 @@ HT16K33 display;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("SparkFun Qwiic Alphanumeric - Example 6: Set Blink Rate");
+  Serial.println("SparkFun Qwiic Alphanumeric - Example 5: Set Blink Rate");
   Wire.begin(); //Join I2C bus
 
   //check if display will acknowledge

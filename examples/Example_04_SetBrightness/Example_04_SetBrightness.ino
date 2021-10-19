@@ -23,7 +23,7 @@ HT16K33 display;
 
 void setup() {
   Serial.begin(115200);
-  Serial.println("SparkFun Qwiic Alphanumeric - Example 5: Set Brightness");
+  Serial.println("SparkFun Qwiic Alphanumeric - Example 4: Set Brightness");
   Wire.begin(); //Join I2C bus
 
   //check if display will acknowledge

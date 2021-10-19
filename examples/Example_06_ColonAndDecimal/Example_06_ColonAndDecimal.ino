@@ -23,7 +23,7 @@ HT16K33 display;
 
 void setup(){
   Serial.begin(115200);
-  Serial.println("SparkFun Qwiic Alphanumeric - Example 7: Colon And Decimal");
+  Serial.println("SparkFun Qwiic Alphanumeric - Example 6: Colon And Decimal");
 
   Wire.begin();
 
