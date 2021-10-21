@@ -1,11 +1,11 @@
 SparkFun Alphanumeric Display Library
 ========================================
 
-[![Qwiic Alphanumeric Display - Pink](https://cdn.sparkfun.com/assets/parts/1/5/1/1/2/16391-Demo-01.jpg)](https://cdn.sparkfun.com/assets/parts/1/5/1/1/2/16391-Demo-01.jpg)
+[![Qwiic Alphanumeric Display - Pink](https://cdn.sparkfun.com/assets/parts/1/5/8/5/5/16919-SparkFun_Qwiic_Alphanumeric_Display_-_Pink-01a.jpg)](https://cdn.sparkfun.com/assets/parts/1/5/1/1/2/16391-Demo-01.jpg)
 
 [*Qwiic Alphanumeric Display - Pink (COM-16919)*](https://www.sparkfun.com/products/16919)
 
-[![Qwiic Alphanumeric Display - Green](https://cdn.sparkfun.com/assets/parts/1/5/1/1/2/16391-Demo-01.jpg)](https://cdn.sparkfun.com/assets/parts/1/5/1/1/2/16391-Demo-01.jpg)
+[![Qwiic Alphanumeric Display - Green](https://cdn.sparkfun.com/assets/parts/1/8/0/2/2/18566-SparkFun_Qwiic_Alphanumeric_Display_-_Green-01.jpg)](https://cdn.sparkfun.com/assets/parts/1/5/1/1/2/16391-Demo-01.jpg)
 
 [*Qwiic Alphanumeric Display - Green (COM-18566)*](https://www.sparkfun.com/products/18566)
 
