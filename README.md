@@ -1,23 +1,34 @@
 SparkFun Alphanumeric Display Library
 ========================================
 
+[![Qwiic Alphanumeric Display - Pink](https://cdn.sparkfun.com/assets/parts/1/5/1/1/2/16391-Demo-01.jpg)](https://cdn.sparkfun.com/assets/parts/1/5/1/1/2/16391-Demo-01.jpg)
+
+[*Qwiic Alphanumeric Display - Pink (COM-16919)*](https://www.sparkfun.com/products/16919)
+
+[![Qwiic Alphanumeric Display - Green](https://cdn.sparkfun.com/assets/parts/1/5/1/1/2/16391-Demo-01.jpg)](https://cdn.sparkfun.com/assets/parts/1/5/1/1/2/16391-Demo-01.jpg)
+
+[*Qwiic Alphanumeric Display - Green (COM-18566)*](https://www.sparkfun.com/products/18566)
+
+<!--
 [![Qwiic Alphanumeric Display - Red](https://cdn.sparkfun.com/assets/parts/1/5/1/8/3/16427-Demo-01.jpg)](https://cdn.sparkfun.com/assets/parts/1/5/1/8/3/16427-Demo-01.jpg)
 
-[*Qwiic Alphanumeric Display - Red (SPX-16427)*](https://www.sparkfun.com/products/16427)
+[*Qwiic Alphanumeric Display - Red (COM-16916)*](https://www.sparkfun.com/products/16916)
 
 [![Qwiic Alphanumeric Display - Blue](https://cdn.sparkfun.com/assets/parts/1/5/1/8/2/16426-Demo-01.jpg)](https://cdn.sparkfun.com/assets/parts/1/5/1/8/2/16426-Demo-01.jpg)
 
-[*Qwiic Alphanumeric Display - Blue (SPX-16426)*](https://www.sparkfun.com/products/16426)
+[*Qwiic Alphanumeric Display - Blue (COM-16917)*](https://www.sparkfun.com/products/16917)
 
 [![Qwiic Alphanumeric Display - Purple](https://cdn.sparkfun.com/assets/parts/1/5/1/8/1/16425-Demo-01.jpg)](https://cdn.sparkfun.com/assets/parts/1/5/1/8/1/16425-Demo-01.jpg)
 
-[*Qwiic Alphanumeric Display - Purple (SPX-16425)*](https://www.sparkfun.com/products/16425)
+[*Qwiic Alphanumeric Display - Purple (COM-16918)*](https://www.sparkfun.com/products/16918)
 
-[![Qwiic Alphanumeric Display - Pink](https://cdn.sparkfun.com/assets/parts/1/5/1/1/2/16391-Demo-01.jpg)](https://cdn.sparkfun.com/assets/parts/1/5/1/1/2/16391-Demo-01.jpg)
+-->
 
-[*Qwiic Alphanumeric Display - Pink (SPX-16391)*](https://www.sparkfun.com/products/16391)
+We are quite familiar with seven-segment displays. We see them on our alarm clocks, ovens, and microwaves. By adding more segments to each digit you can display more than just numbers! Introducing the brand new SparkFun Qwiic Alphanumeric Display. These fourteen-segment digits allow you to display all sorts of numbers, characters, and symbols. With [Qwiic](https://www.sparkfun.com/qwiic), simply plug it in and go. No soldering, no figuring out which is SDA or SCL, and no voltage regulation or translation required! 
 
-The SparkFun Qwiic Alphanumeric Display is a 14-segment, 4 digit alphanumeric display with the Hotlek HT16K33 LED Driver. This library allows you to illuminate every segment individually or print full strings through I2C commands. The I2C address is configurable, so daisy-chain up to 4 displays on one bus! 
+The SparkFun Alphanumeric Display Arduino library makes printing strings to the display as easy as calling the print() function. With this library, you'll be able to send I<sup>2</sup>C commands to the VK16K33 LED driver chip to light up segments (including the decimal point or colon) and even scroll your string across the display. You can download the library through the Arduino library manager by searching 'SparkFun Alphanumeric Display' or you can get the GitHub repo as a .zip file and install the library from there.
+
+The VK16K33 also supports I<sup>2</sup>C address configuration. Simply close a combination of the address jumpers on the back and you can communicate with up to four displays on the same bus. Our slim board design also features detachable standoff holes, vertical Qwiic connectors, and internal mounting holes.
 
 SparkFun labored with love to create this code. Feel like supporting open source hardware? 
 Buy a [board]() from SparkFun!
