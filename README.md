@@ -10,17 +10,21 @@ SparkFun Alphanumeric Display Library
 [*Qwiic Alphanumeric Display - Green (COM-18566)*](https://www.sparkfun.com/products/18566)
 
 <!--
-[![Qwiic Alphanumeric Display - Red](https://cdn.sparkfun.com/assets/parts/1/5/1/8/3/16427-Demo-01.jpg)](https://cdn.sparkfun.com/assets/parts/1/5/1/8/3/16427-Demo-01.jpg)
+[![Qwiic Alphanumeric Display - Red](https://cdn.sparkfun.com/assets/parts/1/5/8/5/2/16916-SparkFun_Qwiic_Alphanumeric_Display_-_Red-Demo.jpg)](https://cdn.sparkfun.com/assets/parts/1/5/8/5/2/16916-SparkFun_Qwiic_Alphanumeric_Display_-_Red-Demo.jpg)
 
 [*Qwiic Alphanumeric Display - Red (COM-16916)*](https://www.sparkfun.com/products/16916)
 
-[![Qwiic Alphanumeric Display - Blue](https://cdn.sparkfun.com/assets/parts/1/5/1/8/2/16426-Demo-01.jpg)](https://cdn.sparkfun.com/assets/parts/1/5/1/8/2/16426-Demo-01.jpg)
+[![Qwiic Alphanumeric Display - Blue](https://cdn.sparkfun.com/assets/parts/1/5/8/5/3/16917-SparkFun_Qwiic_Alphanumeric_Display_-_Blue-Demo.jpg)](https://cdn.sparkfun.com/assets/parts/1/5/8/5/3/16917-SparkFun_Qwiic_Alphanumeric_Display_-_Blue-Demo.jpg)
 
 [*Qwiic Alphanumeric Display - Blue (COM-16917)*](https://www.sparkfun.com/products/16917)
 
-[![Qwiic Alphanumeric Display - Purple](https://cdn.sparkfun.com/assets/parts/1/5/1/8/1/16425-Demo-01.jpg)](https://cdn.sparkfun.com/assets/parts/1/5/1/8/1/16425-Demo-01.jpg)
+[![Qwiic Alphanumeric Display - Purple](https://cdn.sparkfun.com/assets/parts/1/5/8/5/4/16918-SparkFun_Qwiic_Alphanumeric_Display_-_Purple-Demo.jpg)](https://cdn.sparkfun.com/assets/parts/1/5/8/5/4/16918-SparkFun_Qwiic_Alphanumeric_Display_-_Purple-Demo.jpg)
 
 [*Qwiic Alphanumeric Display - Purple (COM-16918)*](https://www.sparkfun.com/products/16918)
+
+[![Qwiic Alphanumeric Display - White](https://cdn.sparkfun.com/assets/parts/1/8/0/2/0/18565-SparkFun_Qwiic_Alphanumeric_Display_-_White-Demo.jpg)](https://cdn.sparkfun.com/assets/parts/1/8/0/2/0/18565-SparkFun_Qwiic_Alphanumeric_Display_-_White-Demo.jpg)
+
+[*Qwiic Alphanumeric Display - White (COM-18565)*](https://www.sparkfun.com/products/18565)
 
 -->
 
