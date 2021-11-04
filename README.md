@@ -9,7 +9,6 @@ SparkFun Alphanumeric Display Library
 
 [*Qwiic Alphanumeric Display - Green (COM-18566)*](https://www.sparkfun.com/products/18566)
 
-<!--
 [![Qwiic Alphanumeric Display - Red](https://cdn.sparkfun.com/assets/parts/1/5/8/5/2/16916-SparkFun_Qwiic_Alphanumeric_Display_-_Red-Demo.jpg)](https://cdn.sparkfun.com/assets/parts/1/5/8/5/2/16916-SparkFun_Qwiic_Alphanumeric_Display_-_Red-Demo.jpg)
 
 [*Qwiic Alphanumeric Display - Red (COM-16916)*](https://www.sparkfun.com/products/16916)
@@ -25,8 +24,6 @@ SparkFun Alphanumeric Display Library
 [![Qwiic Alphanumeric Display - White](https://cdn.sparkfun.com/assets/parts/1/8/0/2/0/18565-SparkFun_Qwiic_Alphanumeric_Display_-_White-Demo.jpg)](https://cdn.sparkfun.com/assets/parts/1/8/0/2/0/18565-SparkFun_Qwiic_Alphanumeric_Display_-_White-Demo.jpg)
 
 [*Qwiic Alphanumeric Display - White (COM-18565)*](https://www.sparkfun.com/products/18565)
-
--->
 
 We are quite familiar with seven-segment displays. We see them on our alarm clocks, ovens, and microwaves. By adding more segments to each digit you can display more than just numbers! Introducing the brand new SparkFun Qwiic Alphanumeric Display. These fourteen-segment digits allow you to display all sorts of numbers, characters, and symbols. With [Qwiic](https://www.sparkfun.com/qwiic), simply plug it in and go. No soldering, no figuring out which is SDA or SCL, and no voltage regulation or translation required! 
 
