@@ -35,7 +35,7 @@ void setup() {
   Serial.println("Display acknowledged.");
   
   //The input to setBrightness is a duty cycle over 16
-  //So, acceptable inputs to this function are ints between 0 (display off) and 15 (full brightness)
+  //So, acceptable inputs to this function are ints between 0 (1/16 brightness) and 15 (full brightness)
   display.setBrightness(15);
   
   display.print("Milk");

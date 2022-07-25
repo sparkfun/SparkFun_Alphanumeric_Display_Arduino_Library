@@ -322,7 +322,7 @@ bool HT16K33::clear()
 }
 
 // This function sets the brightness of all displays on the bus.
-// Duty cycle valid between 0 (off) and 15 (full brightness)
+// Duty cycle valid between 0 (1/16 brightness) and 15 (full brightness)
 bool HT16K33::setBrightness(uint8_t duty)
 {
 	bool status = true;
@@ -335,7 +335,7 @@ bool HT16K33::setBrightness(uint8_t duty)
 }
 
 // Set the brightness of a single display
-// Duty cycle valid between 0 (off) and 15 (full brightness)
+// Duty cycle valid between 0 (1/16 brightness) and 15 (full brightness)
 bool HT16K33::setBrightnessSingle(uint8_t displayNumber, uint8_t duty)
 {
 	if (duty > 15) // Error check
