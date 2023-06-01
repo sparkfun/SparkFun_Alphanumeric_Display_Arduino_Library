@@ -640,9 +640,9 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 
 	// Take care of special characters by turning correct segment on
 	if (characterPosition == 14) // '.'
-		decimalOnSingle(dispNum+1);
+		displayRAM[(dispNum * 16) + 3] = displayRAM[(dispNum * 16) + 3] | 1;
 	if (characterPosition == 26) // ':'
-		colonOnSingle(dispNum+1);
+		displayRAM[(dispNum * 16) + 1] = displayRAM[(dispNum * 16) + 1] | 1;
 	if (characterPosition == 65532) // unknown character
 		characterPosition = SFE_ALPHANUM_UNKNOWN_CHAR;
 
