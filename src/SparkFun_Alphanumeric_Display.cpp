@@ -449,19 +449,19 @@ bool HT16K33::displayOff()
 }
 
 // Turn the decimal point on for a single display
-bool HT16K33::decimalOnSingle(uint8_t displayNumber)
+bool HT16K33::decimalOnSingle(uint8_t displayNumber, bool updateNow)
 {
-	return setDecimalOnOff(displayNumber, true);
+	return setDecimalOnOff(displayNumber, true, updateNow);
 }
 
 // Turn the decimal point off for a single display
-bool HT16K33::decimalOffSingle(uint8_t displayNumber)
+bool HT16K33::decimalOffSingle(uint8_t displayNumber, bool updateNow)
 {
-	return setDecimalOnOff(displayNumber, false);
+	return setDecimalOnOff(displayNumber, false, updateNow);
 }
 
 // Set or clear the decimal on/off bit
-bool HT16K33::setDecimalOnOff(uint8_t displayNumber, bool turnOnDecimal)
+bool HT16K33::setDecimalOnOff(uint8_t displayNumber, bool turnOnDecimal, bool updateNow)
 {
 	uint8_t adr = 0x03;
 	uint8_t dat;
@@ -478,7 +478,15 @@ bool HT16K33::setDecimalOnOff(uint8_t displayNumber, bool turnOnDecimal)
 	}
 
 	displayRAM[adr + (displayNumber - 1) * 16] = displayRAM[adr + (displayNumber - 1) * 16] | dat;
-	return (updateDisplay());
+
+	if(updateNow)
+	{
+		return updateDisplay();
+	}
+	else
+	{
+		return true;
+	}
 }
 
 // Turn the decimal on for all displays on bus
@@ -513,19 +521,19 @@ bool HT16K33::decimalOff()
 }
 
 // Turn the colon on for a single display
-bool HT16K33::colonOnSingle(uint8_t displayNumber)
+bool HT16K33::colonOnSingle(uint8_t displayNumber, bool updateNow)
 {
-	return setColonOnOff(displayNumber, true);
+	return setColonOnOff(displayNumber, true, updateNow);
 }
 
 // Turn the colon off for a single display
-bool HT16K33::colonOffSingle(uint8_t displayNumber)
+bool HT16K33::colonOffSingle(uint8_t displayNumber, bool updateNow)
 {
-	return setColonOnOff(displayNumber, false);
+	return setColonOnOff(displayNumber, false, updateNow);
 }
 
 // Set or clear the colon on/off bit
-bool HT16K33::setColonOnOff(uint8_t displayNumber, bool turnOnColon)
+bool HT16K33::setColonOnOff(uint8_t displayNumber, bool turnOnColon, bool updateNow)
 {
 	uint8_t adr = 0x01;
 	uint8_t dat;
@@ -542,7 +550,15 @@ bool HT16K33::setColonOnOff(uint8_t displayNumber, bool turnOnColon)
 	}
 
 	displayRAM[adr + (displayNumber - 1) * 16] = displayRAM[adr + (displayNumber - 1) * 16] | dat;
-	return (updateDisplay());
+
+	if(updateNow)
+	{
+		return updateDisplay();
+	}
+	else
+	{
+		return true;
+	}
 }
 
 // Turn the colon on for all displays on the bus
@@ -640,9 +656,9 @@ void HT16K33::printChar(uint8_t displayChar, uint8_t digit)
 
 	// Take care of special characters by turning correct segment on
 	if (characterPosition == 14) // '.'
-		decimalOnSingle(dispNum+1);
+		decimalOnSingle(dispNum+1, false);
 	if (characterPosition == 26) // ':'
-		colonOnSingle(dispNum+1);
+		colonOnSingle(dispNum+1, false);
 	if (characterPosition == 65532) // unknown character
 		characterPosition = SFE_ALPHANUM_UNKNOWN_CHAR;
 

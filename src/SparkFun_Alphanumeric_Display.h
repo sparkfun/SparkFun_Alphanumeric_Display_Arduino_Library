@@ -153,16 +153,16 @@ public:
     // Decimal functions
     bool decimalOn();
     bool decimalOff();
-    bool decimalOnSingle(uint8_t displayNumber);
-    bool decimalOffSingle(uint8_t displayNumber);
-    bool setDecimalOnOff(uint8_t displayNumber, bool turnOnDecimal);
+    bool decimalOnSingle(uint8_t displayNumber, bool updateNow = true);
+    bool decimalOffSingle(uint8_t displayNumber, bool updateNow = true);
+    bool setDecimalOnOff(uint8_t displayNumber, bool turnOnDecimal, bool updateNow = true);
     
     // Colon functions
     bool colonOn();
     bool colonOff();
-    bool colonOnSingle(uint8_t displayNumber);
-    bool colonOffSingle(uint8_t displayNumber);
-    bool setColonOnOff(uint8_t displayNumber, bool turnOnColon);
+    bool colonOnSingle(uint8_t displayNumber, bool updateNow = true);
+    bool colonOffSingle(uint8_t displayNumber, bool updateNow = true);
+    bool setColonOnOff(uint8_t displayNumber, bool turnOnColon, bool updateNow = true);
 
     // Shifting
     bool shiftRight(uint8_t shiftAmt = 1);
