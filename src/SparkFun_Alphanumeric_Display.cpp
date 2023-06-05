@@ -340,8 +340,6 @@ bool HT16K33::setBrightnessSingle(uint8_t displayNumber, uint8_t duty)
 {
 	if (duty > 15) // Error check
 		duty = 15; 
-	else if (duty < 0)
-		duty = 0;
 
 	uint8_t dataToWrite = ALPHA_CMD_DIMMING_SETUP | duty;
 	return (writeRAM(lookUpDisplayAddress(displayNumber), dataToWrite));
@@ -744,7 +742,7 @@ uint16_t HT16K33::getSegmentsToTurnOn(uint8_t charPos)
 size_t HT16K33::write(uint8_t b)
 {
 	// If user wants to print '.' or ':', don't increment the digitPosition!
-	if (b == '.' | b == ':')
+	if (b == '.' || b == ':')
 		printChar(b, 0);
 	else
 	{
@@ -869,13 +867,13 @@ bool HT16K33::shiftLeft(uint8_t shiftAmt)
 
 bool HT16K33::readRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffSize)
 {
-	uint8_t displayNum = 0;
+	uint8_t displayNum = 1;
 	if (address == _deviceAddressDisplayTwo)
-		displayNum = 1;
-	else if (address == _deviceAddressDisplayThree)
 		displayNum = 2;
-	else if (address == _deviceAddressDisplayFour)
+	else if (address == _deviceAddressDisplayThree)
 		displayNum = 3;
+	else if (address == _deviceAddressDisplayFour)
+		displayNum = 4;
 	isConnected(displayNum); // Wait until display is ready
 
 	_i2cPort->beginTransmission(address);
@@ -895,14 +893,14 @@ bool HT16K33::readRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffS
 // Write the contents of the RAM array out to the Holtek IC
 bool HT16K33::writeRAM(uint8_t address, uint8_t reg, uint8_t *buff, uint8_t buffSize)
 {
-	uint8_t displayNum = 0;
+	uint8_t displayNum = 1;
 	if (address == _deviceAddressDisplayTwo)
-		displayNum = 1;
-	else if (address == _deviceAddressDisplayThree)
 		displayNum = 2;
-	else if (address == _deviceAddressDisplayFour)
+	else if (address == _deviceAddressDisplayThree)
 		displayNum = 3;
-	//isConnected(displayNum); //Wait until display is ready
+	else if (address == _deviceAddressDisplayFour)
+		displayNum = 4;
+	isConnected(displayNum); //Wait until display is ready
 
 	_i2cPort->beginTransmission(address);
 	_i2cPort->write(reg);
