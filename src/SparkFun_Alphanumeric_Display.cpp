@@ -36,7 +36,7 @@ Distributed as-is; no warranty is given.
 
 //This is the lookup table of segments for various characters
 //For AVR architecture, use PROGMEM
-#if defined(ARDUINO_ARCH_AVR)
+#if defined(ARDUINO_ARCH_AVR) || defined(ARDUINO_ARCH_MEGAAVR)
 #include <avr/pgmspace.h>
 static const uint16_t PROGMEM alphanumeric_segs[96]{
 #else
