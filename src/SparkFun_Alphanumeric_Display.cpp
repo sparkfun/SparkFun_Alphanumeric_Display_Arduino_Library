@@ -475,7 +475,8 @@ bool HT16K33::setDecimalOnOff(uint8_t displayNumber, bool turnOnDecimal, bool up
 		dat = 0x00;
 	}
 
-	displayRAM[adr + (displayNumber - 1) * 16] = displayRAM[adr + (displayNumber - 1) * 16] | dat;
+	displayRAM[adr + (displayNumber - 1) * 16] &= 0xFE;
+	displayRAM[adr + (displayNumber - 1) * 16] |= dat;
 
 	if(updateNow)
 	{
@@ -547,7 +548,8 @@ bool HT16K33::setColonOnOff(uint8_t displayNumber, bool turnOnColon, bool update
 		dat = 0x00;
 	}
 
-	displayRAM[adr + (displayNumber - 1) * 16] = displayRAM[adr + (displayNumber - 1) * 16] | dat;
+	displayRAM[adr + (displayNumber - 1) * 16] &= 0xFE;
+	displayRAM[adr + (displayNumber - 1) * 16] |= dat;
 
 	if(updateNow)
 	{
