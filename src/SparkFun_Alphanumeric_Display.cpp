@@ -761,11 +761,6 @@ size_t HT16K33::write(uint8_t b)
  */
 size_t HT16K33::write(const uint8_t *buffer, size_t size)
 {
-	// Do not exceed number of digits available
-	if(size > 4 * numberOfDisplays)
-		size = 4 * numberOfDisplays;
-	
-	size_t n = size;
 	uint8_t buff;
 
 	// Clear the displayRAM array
@@ -773,10 +768,11 @@ size_t HT16K33::write(const uint8_t *buffer, size_t size)
 		displayRAM[i] = 0;
 
 	digitPosition = 0;
+	size_t stringIndex = 0;
 
-	while (size--)
+	while (stringIndex < size && digitPosition < (4 * numberOfDisplays))
 	{
-		buff = *buffer++;
+		buff = buffer[stringIndex];
 		// For special characters like '.' or ':', do not increment the digitPosition
 		if (buff == '.')
 			printChar('.', 0);
@@ -789,11 +785,12 @@ size_t HT16K33::write(const uint8_t *buffer, size_t size)
 
 			digitPosition++;
 		}
+		stringIndex++;
 	}
 
 	updateDisplay(); // Send RAM buffer over I2C bus
 
-	return n;
+	return stringIndex;
 }
 
 /*
